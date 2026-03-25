@@ -59,7 +59,7 @@ function Header() {
             <div className="collapse navbar-collapse" id="navbarNav">
               <ul className="navbar-nav ms-auto align-items-center">
                 <li className="nav-item">
-                  <Link to="#" className="nav-link fw-bold">Añadir evento</Link>
+                  <Link to="/addEvento" className="nav-link fw-bold">Añadir evento</Link>
                 </li>
                 <li className="nav-item">
                   <Link to="#" className="nav-link fw-bold">Cambiar permisos</Link>

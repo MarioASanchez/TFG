@@ -8,7 +8,7 @@ class Entrada extends Model
 {
       protected $fillable = [
         'evento_id',
-        'puntos',
-        'precio'
+        'precio',
+        'cantidad'
     ];
 }

@@ -11,6 +11,7 @@ import Eventos from "./shared/Eventos";
 import Login from "./Usuario/Login";
 import Register from "./Usuario/Register";
 import { UsuarioHelperProvider } from "./Usuario/Helpers/UsuarioHelper";
+import AddEvento from "./Usuario/AddEvento";
 
 export default function App() {
     return (
@@ -27,6 +28,8 @@ export default function App() {
                             element={<SelectioAsiento />}
                         />
                         <Route path="/eventos" element={<Eventos />} />
+                        {/* Funciones de Admin */}
+                        <Route path="/addEvento" element={<AddEvento />} />
                     </Routes>
                 </UsuarioHelperProvider>
             </IndexHelperProvider>

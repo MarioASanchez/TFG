@@ -11,6 +11,7 @@ import { IndexHelperContext } from "./helpers/IndexHelper";
 function Index() {
     const navigate = useNavigate();
     let { eventos } = useContext(IndexHelperContext);
+    const URL_LARAVEL = "http://localhost:8000/"
 
     function irAlEventos() {
         navigate("/selectorAsiento");
@@ -210,7 +211,7 @@ function Index() {
                                         style={{ cursor: "pointer" }}
                                     >
                                         <img
-                                            src={"/public/" + elemento.imagen}
+                                            src={`${URL_LARAVEL}storage/${elemento.imagen}`}
                                             className="w-100 card-img-small"
                                             
                                         />
