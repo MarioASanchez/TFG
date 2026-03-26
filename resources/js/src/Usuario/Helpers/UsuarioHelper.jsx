@@ -5,8 +5,13 @@ export const UsuarioHelperContext = createContext();
 
 export const UsuarioHelperProvider = ({ children }) => {
     const [usuarios, setUsuarios] = useState(() => {
-        const usuarioGuardado = localStorage.getItem("usuario");
-        return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+        try {
+            const usuarioGuardado = localStorage.getItem("usuario");
+            return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+        } catch (e) {
+            console.error("Error al cargar el usuario:", e);
+            return null;
+        }
     });
 
     const [token, setToken] = useState(localStorage.getItem("token"));
@@ -108,7 +113,7 @@ export const UsuarioHelperProvider = ({ children }) => {
 
     return (
         <UsuarioHelperContext.Provider
-            value={{ usuarios, setUsuarios, login, logout, register, addEvento }}
+            value={{ usuarios, setUsuarios, token, login, logout, register, addEvento }}
         >
             {children}
         </UsuarioHelperContext.Provider>

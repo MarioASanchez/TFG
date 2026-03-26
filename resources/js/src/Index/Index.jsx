@@ -7,14 +7,20 @@ import React, { useContext } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { IndexHelperContext } from "./helpers/IndexHelper";
+import SelectioAsiento from "../shared/SelectioAsiento";
+import { useState } from "react";
 
 function Index() {
     const navigate = useNavigate();
     let { eventos } = useContext(IndexHelperContext);
     const URL_LARAVEL = "http://localhost:8000/"
 
-    function irAlEventos() {
-        navigate("/selectorAsiento");
+    const [showSelector, setShowSelector] = useState(false);
+    const [eventoActivo, setEventoActivo] = useState(null);
+
+    function irAlEventos(evento) {
+        setEventoActivo(evento);
+        setShowSelector(true);
     }
 
     function verEventos() {
@@ -110,7 +116,7 @@ function Index() {
                                         </span>
                                         <button
                                             className="btn btn-primary-custom btn-sm"
-                                            onClick={irAlEventos}
+                                            onClick={() => irAlEventos(eventos[0] || {nombre: 'El Lago de los Cisnes', imagen: 'https://images.unsplash.com/photo-1503095396549-807759245b35?w=500', fechaInicio: '15 Dic 2024'})}
                                         >
                                             Ver más
                                         </button>
@@ -145,7 +151,7 @@ function Index() {
                                         </span>
                                         <button
                                             className="btn btn-primary-custom btn-sm"
-                                            onClick={irAlEventos}
+                                            onClick={() => irAlEventos(eventos[1] || {nombre: 'Concierto Sinfónico', imagen: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=500', fechaInicio: '31 Dic 2024'})}
                                         >
                                             Ver más
                                         </button>
@@ -179,7 +185,7 @@ function Index() {
                                         </span>
                                         <button
                                             className="btn btn-primary-custom btn-sm"
-                                            onClick={irAlEventos}
+                                            onClick={() => irAlEventos(eventos[2] || {nombre: 'Don Quijote', imagen: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=500', fechaInicio: '20 Dic 2024'})}
                                         >
                                             Ver más
                                         </button>
@@ -192,7 +198,7 @@ function Index() {
             </section>
 
             {/* Todos los eventos */}
-            <section className="py-5 bg-dark-custom">
+            <section className="py-5">
                 <div className="container">
                     <h2 className="display-5 fw-bold mb-5" id="todos_eventos">
                         Todos los Eventos
@@ -203,30 +209,30 @@ function Index() {
                             return (
                                 <div
                                     className="col-lg-3 col-md-4 col-sm-6"
-                                    // onClick={irAlEventos}
                                     key={indice}
                                 >
-                                    <div
-                                        className="card-custom"
+                                    <div 
+                                        className="card-custom h-100 d-flex flex-column p-0 overflow-hidden shadow-sm" 
                                         style={{ cursor: "pointer" }}
+                                        onClick={() => irAlEventos(elemento)}
                                     >
                                         <img
-                                            src={`${URL_LARAVEL}storage/${elemento.imagen}`}
+                                            src={elemento.imagen.startsWith('http') ? elemento.imagen : `/storage/${elemento.imagen}`}
                                             className="w-100 card-img-small"
-                                            
+                                            alt={elemento.nombre}
                                         />
-                                        <div className="p-3">
+                                        <div className="p-3 flex-grow-1 d-flex flex-column">
                                             <h3 className="h6 fw-bold mb-2">
                                                 {elemento.nombre}
                                             </h3>
-                                            <p className="small text-gray-custom mb-3">
-                                                Aforo: {elemento.aforo}
+                                            <p className="small text-muted mb-3 mt-auto">
+                                                Aforo: {elemento.aforo} • {elemento.localizacion || 'Murcia'}
                                             </p>
                                             <div className="d-flex justify-content-between align-items-center">
                                                 <span className="fw-bold text-purple">
-                                                    Fecha Inicio :  {elemento.fechaInicio}
+                                                    {elemento.fechaInicio}
                                                 </span>
-                                                <span className="small text-success">
+                                                <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1" style={{fontSize: '0.7rem'}}>
                                                     Disponible
                                                 </span>
                                             </div>
@@ -302,6 +308,12 @@ function Index() {
             </section>
             {/* Footer */}
             <Footer />
+
+            <SelectioAsiento 
+                show={showSelector} 
+                handleClose={() => setShowSelector(false)} 
+                evento={eventoActivo} 
+            />
 
             {/* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
       <script src="index.js"></script> */}

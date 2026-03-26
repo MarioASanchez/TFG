@@ -11,9 +11,11 @@ use Illuminate\Http\Request;
 class EntradaController
 {
     function verProductos(){
-        $pedidos = [];
-        $pedidos = Evento::all();
-        return response()->json($pedidos);
+        $eventos = DB::table('eventos')
+            ->join('entradas', 'eventos.id', '=', 'entradas.evento_id')
+            ->select('eventos.*', 'entradas.precio', 'entradas.cantidad as stock')
+            ->get();
+        return response()->json($eventos);
     }
 
     // Función para añadir los Eventos

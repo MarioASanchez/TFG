@@ -6,11 +6,11 @@ import Index from "./Index/Index";
 import React from "react";
 import Perfil from "./Perfil/Perfil";
 import { IndexHelperProvider } from "./Index/helpers/IndexHelper";
-import SelectioAsiento from "./shared/SelectioAsiento";
 import Eventos from "./shared/Eventos";
 import Login from "./Usuario/Login";
 import Register from "./Usuario/Register";
 import { UsuarioHelperProvider } from "./Usuario/Helpers/UsuarioHelper";
+import { CarritoProvider } from "./shared/Helpers/CarritoHelper";
 import AddEvento from "./Usuario/AddEvento";
 
 export default function App() {
@@ -18,19 +18,17 @@ export default function App() {
         <>
             <IndexHelperProvider>
                 <UsuarioHelperProvider>
-                    <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/perfil/:id" element={<Perfil />} />
-                        <Route path="/registro" element={<Register />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route
-                            path="/selectorAsiento"
-                            element={<SelectioAsiento />}
-                        />
-                        <Route path="/eventos" element={<Eventos />} />
-                        {/* Funciones de Admin */}
-                        <Route path="/addEvento" element={<AddEvento />} />
-                    </Routes>
+                    <CarritoProvider>
+                        <Routes>
+                            <Route path="/" element={<Index />} />
+                            <Route path="/perfil/:id" element={<Perfil />} />
+                            <Route path="/registro" element={<Register />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/eventos" element={<Eventos />} />
+                            {/* Funciones de Admin */}
+                            <Route path="/addEvento" element={<AddEvento />} />
+                        </Routes>
+                    </CarritoProvider>
                 </UsuarioHelperProvider>
             </IndexHelperProvider>
         </>
