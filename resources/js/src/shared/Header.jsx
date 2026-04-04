@@ -63,12 +63,14 @@ function Header() {
               {/* 3. USUARIO LOGUEADO (Cualquier rol) */}
               {usuarios && (
                 <>
+                <CartButton />
                   <li className="nav-item">
                     <Link to="/" className="nav-link fw-bold">Inicio</Link>
                   </li>
                   <li className="nav-item">
                     <Link to="/eventos" className="nav-link fw-bold">Eventos</Link>
                   </li>
+                  
 
                   {/* --- SOLO USUARIOS NORMALES (NO ADMIN) --- */}
                   {!usuarios.admin && (

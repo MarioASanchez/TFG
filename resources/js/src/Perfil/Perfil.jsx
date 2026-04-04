@@ -15,26 +15,8 @@ function Perfil() {
   let { usuarios } = useContext(UsuarioHelperContext)
   const [datosPerfil, setDatosPerfil] = useState(null);
 
-  useEffect(() => {
-      if(usuarioLogueado && usuarios.length > 0){
-      const perfil = usuarios.find((elemento) => elemento.id === usuarioLogueado.id);
-      setDatosPerfil(perfil)
-    }
-  }, [usuarioLogueado, usuarios]);
-
-
-  
-    function procesa(ev) {
-          ev.preventDefault();
-          const obj={
-            nombre: ev.target.nuevoNombre.value,
-            apellidos: ev.target.nuevoApellido.value
-          }
-
-          cambiarNombre(datosPerfil.uid, obj)
-      }
       
-if (!datosPerfil) {
+if (!usuarios) {
   return <p>Cargando datos del perfil...</p>;
 }
 
@@ -55,10 +37,10 @@ if (!datosPerfil) {
         {/* <!-- Profile Header --> */}
         <div className="profile-header">
           <h1 className="text-center mb-2" id="profileUserName">
-            {datosPerfil.nombre+" "+datosPerfil.apellidos}
+            {usuarios.nombre+" "+usuarios.apellidos}
           </h1>
           <p className="text-center mb-0 opacity-75" id="profileUserEmail">
-            {datosPerfil.user}
+            {usuarios.user}
           </p>
         </div>
 
@@ -79,7 +61,7 @@ if (!datosPerfil) {
           <div className="col-md-6">
             <div className="card-custom p-4 text-center">
               <i className="bi bi-star-fill fs-1 text-warning mb-2"></i>
-              <h3>{datosPerfil.puntosAcumulados}</h3>
+              <h3>{usuarios.puntosAcumulados}</h3>
               <p className="text-muted mb-0">Puntos acumulados</p>
             </div>
           </div>
@@ -163,7 +145,7 @@ if (!datosPerfil) {
                     <div className="calendar-header">
                       <button
                         className="btn btn-sm btn-outline-secondary"
-                        onclick="previousMonth()"
+                        onClick="previousMonth()"
                       >
                         <i className="bi bi-chevron-left"></i>
                       </button>
@@ -172,7 +154,7 @@ if (!datosPerfil) {
                       </h5>
                       <button
                         className="btn btn-sm btn-outline-secondary"
-                        onclick="nextMonth()"
+                        onClick="nextMonth()"
                       >
                         <i className="bi bi-chevron-right"></i>
                       </button>
@@ -532,7 +514,7 @@ if (!datosPerfil) {
                   </div>
                   <button
                     className="btn btn-primary-custom btn-sm"
-                    onclick="copyCoupon('BIENVENIDA20')"
+                    onClick="copyCoupon('BIENVENIDA20')"
                   >
                     <i className="bi bi-clipboard me-1"></i>Copiar
                   </button>
@@ -550,7 +532,7 @@ if (!datosPerfil) {
                   </div>
                   <button
                     className="btn btn-primary-custom btn-sm"
-                    onclick="copyCoupon('PRIMERA10')"
+                    onClick="copyCoupon('PRIMERA10')"
                   >
                     <i className="bi bi-clipboard me-1"></i>Copiar
                   </button>
@@ -568,7 +550,7 @@ if (!datosPerfil) {
                   </div>
                   <button
                     className="btn btn-primary-custom btn-sm"
-                    onclick="copyCoupon('DOSPORUN0')"
+                    onClick="copyCoupon('DOSPORUN0')"
                   >
                     <i className="bi bi-clipboard me-1"></i>Copiar
                   </button>
@@ -681,14 +663,14 @@ if (!datosPerfil) {
                 <i className="bi bi-person me-2"></i>Información de la Cuenta
               </h4>
                             
-              <form onSubmit={procesa}>
+              {/* <form onSubmit={procesa}>
                 <div className="mb-3">
                   <label className="form-label">Nombre</label>
                   <input
                     type="text"
                     className="form-control"
                     name="nuevoNombre"
-                    defaultValue={datosPerfil.nombre}
+                    defaultValue={usuarios.nombre}
                     required
                   />
                 </div>
@@ -698,7 +680,7 @@ if (!datosPerfil) {
                     type="text"
                     className="form-control"
                     name="nuevoApellido"
-                    defaultValue={datosPerfil.apellidos}
+                    defaultValue={usuarios.apellidos}
                     required
                   />
                 </div>
@@ -707,7 +689,7 @@ if (!datosPerfil) {
                   <input
                     type="email"
                     className="form-control"
-                    value={datosPerfil.user}
+                    value={usuarios.user}
                     disabled
                   />
                   <small className="text-muted">
@@ -717,7 +699,7 @@ if (!datosPerfil) {
                 <button type="submit" className="btn btn-primary-custom">
                   <i className="bi bi-check-circle me-2"></i>Guardar cambios
                 </button>
-              </form>
+              </form> */}
             </div>
 
             <div className="card-custom p-4 mb-4">
@@ -797,7 +779,7 @@ if (!datosPerfil) {
               </p>
               <button
                 className="btn btn-danger w-100"
-                onClick={() => eliminarUsuario(datosPerfil.uid)}
+                onClick={() => eliminarUsuario(usuarios.id)}
               >
                 <i className="bi bi-trash me-2"></i>Eliminar cuenta permanentemente
               </button>
@@ -809,10 +791,7 @@ if (!datosPerfil) {
       {/* <!-- Footer --> */}
       <Footer />
 
-      {/* <!-- Bootstrap JS --> */}
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-      <script src="perfil.js"></script>
     </>
   );
 }
