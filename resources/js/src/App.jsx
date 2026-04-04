@@ -11,24 +11,29 @@ import Login from "./Usuario/Login";
 import Register from "./Usuario/Register";
 import { UsuarioHelperProvider } from "./Usuario/Helpers/UsuarioHelper";
 import { CarritoProvider } from "./shared/Helpers/CarritoHelper";
-import AddEvento from "./Usuario/AddEvento";
+import AddEvento from "./Admin/AddEvento";
+import CambiarPermisos from "./Admin/CambiarPermisos";
+import { AdminHelperProvider } from "./Admin/Helpers/AdminHelper";
 
 export default function App() {
     return (
         <>
             <IndexHelperProvider>
                 <UsuarioHelperProvider>
-                    <CarritoProvider>
-                        <Routes>
-                            <Route path="/" element={<Index />} />
-                            <Route path="/perfil/:id" element={<Perfil />} />
-                            <Route path="/registro" element={<Register />} />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/eventos" element={<Eventos />} />
-                            {/* Funciones de Admin */}
-                            <Route path="/addEvento" element={<AddEvento />} />
-                        </Routes>
-                    </CarritoProvider>
+                    <AdminHelperProvider>
+                        <CarritoProvider>
+                            <Routes>
+                                <Route path="/" element={<Index />} />
+                                <Route path="/perfil/:id" element={<Perfil />} />
+                                <Route path="/registro" element={<Register />} />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/eventos" element={<Eventos />} />
+                                {/* Funciones de Admin */}
+                                <Route path="/addEvento" element={<AddEvento />} />
+                                <Route path="/permisos" element={<CambiarPermisos />}></Route>
+                            </Routes>
+                        </CarritoProvider>
+                    </AdminHelperProvider>
                 </UsuarioHelperProvider>
             </IndexHelperProvider>
         </>

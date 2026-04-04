@@ -4,11 +4,13 @@ import "bootstrap/dist/js/bootstrap.min.js";
 import React, { useContext, useState } from 'react';
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
-import { UsuarioHelperContext } from "./Helpers/UsuarioHelper";
+import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 import { useNavigate } from "react-router-dom";
+import { AdminHelperContext } from "./Helpers/AdminHelper";
 
 function AddEvento() {
-    const { addEvento } = useContext(UsuarioHelperContext)
+    const { usuarios } = useContext(UsuarioHelperContext)
+    const { addEvento } = useContext(AdminHelperContext)
     const navigate = useNavigate();
 
     async function procesa(ev) { 
@@ -46,7 +48,7 @@ function AddEvento() {
         <>
             <Header />
             <div className="container mb-5">
-                <h2 className="mt-4">Hola Admin, añade un nuevo evento</h2>
+                <h2 className="mt-4">Hola {usuarios.nombre}, añade un nuevo evento</h2>
                 <form onSubmit={procesa}>
                     <div className="form-group">
                         <label>Nombre del evento</label><br />
@@ -75,6 +77,10 @@ function AddEvento() {
                     <div className="form-group">
                         <label>Descripción</label><br />
                         <textarea name="descripcion" placeholder="Escribe aquí la descripción del evento" className="form-control" required/> <br />    
+                    </div>
+                    <div className="form-group">
+                        <label>Etiquetas (añádelas separadas por comas ",")</label>
+                        <input type="text" name="etiqueta" className="form-control" required/> <br />
                     </div>
                     <div className="form-group">
                         <label>Sube la imagen destacada del evento</label>

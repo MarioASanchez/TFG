@@ -9,14 +9,15 @@ import Header from "../shared/Header";
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { IndexHelperContext } from "../Index/helpers/IndexHelper";
+import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 
 function Perfil() {
-  let { eliminarUsuario, usuarios, usuarioLogueado, cambiarNombre } = useContext(IndexHelperContext)
+  let { usuarios } = useContext(UsuarioHelperContext)
   const [datosPerfil, setDatosPerfil] = useState(null);
 
   useEffect(() => {
       if(usuarioLogueado && usuarios.length > 0){
-      const perfil = usuarios.find((elemento) => elemento.uid === usuarioLogueado.uid);
+      const perfil = usuarios.find((elemento) => elemento.id === usuarioLogueado.id);
       setDatosPerfil(perfil)
     }
   }, [usuarioLogueado, usuarios]);

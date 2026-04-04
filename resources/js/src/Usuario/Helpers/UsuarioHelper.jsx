@@ -106,14 +106,12 @@ export const UsuarioHelperProvider = ({ children }) => {
         }catch (error){
             console.log(error);
         }
-
-
         
     }
 
     return (
         <UsuarioHelperContext.Provider
-            value={{ usuarios, setUsuarios, token, login, logout, register, addEvento }}
+            value={{ usuarios, setUsuarios, token, login, logout, register }}
         >
             {children}
         </UsuarioHelperContext.Provider>
