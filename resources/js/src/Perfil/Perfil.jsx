@@ -12,13 +12,21 @@ import { IndexHelperContext } from "../Index/helpers/IndexHelper";
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 
 function Perfil() {
-  let { usuarios } = useContext(UsuarioHelperContext)
-  const [datosPerfil, setDatosPerfil] = useState(null);
+  let { usuarios, eliminarCuenta } = useContext(UsuarioHelperContext)
 
-      
-if (!usuarios) {
-  return <p>Cargando datos del perfil...</p>;
-}
+  function procesa(ev) {
+    ev.preventDefault();
+    const datosNuevos = {
+      nuevoNombre: ev.target.nuevoNombre.value,
+      nuevoApellido: ev.target.nuevoApellido.value,
+      nuevoUsername: ev.target.nuevoUsername.value
+    }
+    
+  }
+
+  if (!usuarios) {
+    return <p>Cargando datos del perfil...</p>;
+  }
 
   return (
     <>
@@ -37,10 +45,10 @@ if (!usuarios) {
         {/* <!-- Profile Header --> */}
         <div className="profile-header">
           <h1 className="text-center mb-2" id="profileUserName">
-            {usuarios.nombre+" "+usuarios.apellidos}
+            {usuarios.nombre + " " + usuarios.apellidos}
           </h1>
           <p className="text-center mb-0 opacity-75" id="profileUserEmail">
-            {usuarios.user}
+            {usuarios.email}
           </p>
         </div>
 
@@ -50,7 +58,7 @@ if (!usuarios) {
             <div className="card-custom p-4 text-center">
               <i
                 className="bi bi-ticket-perforated fs-1 mb-2"
-                style={ {color: "var(--primary-color)"}}
+                style={{ color: "var(--primary-color)" }}
               ></i>
               <h3 className="mb-0" id="profileEventCount">
                 3
@@ -85,7 +93,7 @@ if (!usuarios) {
               data-bs-toggle="pill"
               data-bs-target="#tabRecommended"
               type="button"
-              
+
             >
               <i className="bi bi-graph-up-arrow me-2 "></i>Recomendados
             </button>
@@ -317,7 +325,7 @@ if (!usuarios) {
                       <div className="d-flex justify-content-between align-items-center">
                         <span
                           className="fw-bold"
-                          style={ {color: "var(--primary-color)"}}
+                          style={{ color: "var(--primary-color)" }}
                         >
                           55€
                         </span>
@@ -347,7 +355,7 @@ if (!usuarios) {
                       <div className="d-flex justify-content-between align-items-center">
                         <span
                           className="fw-bold"
-                          style={ {color: "var(--primary-color)"}}
+                          style={{ color: "var(--primary-color)" }}
                         >
                           40€
                         </span>
@@ -377,7 +385,7 @@ if (!usuarios) {
                       <div className="d-flex justify-content-between align-items-center">
                         <span
                           className="fw-bold"
-                          style={ {color: "var(--primary-color)"}}
+                          style={{ color: "var(--primary-color)" }}
                         >
                           25€
                         </span>
@@ -417,7 +425,7 @@ if (!usuarios) {
                     <div className="d-flex justify-content-between align-items-center">
                       <span
                         className="fw-bold fs-5"
-                        style={ {color: "var(--primary-color)"}}
+                        style={{ color: "var(--primary-color)" }}
                       >
                         35€
                       </span>
@@ -446,7 +454,7 @@ if (!usuarios) {
                     <div className="d-flex justify-content-between align-items-center">
                       <span
                         className="fw-bold fs-5"
-                        style={ {color: "var(--primary-color)"}}
+                        style={{ color: "var(--primary-color)" }}
                       >
                         30€
                       </span>
@@ -466,7 +474,7 @@ if (!usuarios) {
               <div className="col-md-4">
                 <div
                   className="card-custom p-4 text-center"
-                  style={{ background: "linear-gradient(135deg, #dcfce7 0%, #86efac 100%)"}}
+                  style={{ background: "linear-gradient(135deg, #dcfce7 0%, #86efac 100%)" }}
                 >
                   <i className="bi bi-percent fs-1 text-success mb-2"></i>
                   <h3 className="mb-0">3</h3>
@@ -476,7 +484,7 @@ if (!usuarios) {
               <div className="col-md-4">
                 <div
                   className="card-custom p-4 text-center"
-                  style={{background: "linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%)"}}
+                  style={{ background: "linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%)" }}
                 >
                   <i className="bi bi-gift fs-1 text-primary mb-2"></i>
                   <h3 className="mb-0">7€</h3>
@@ -486,11 +494,11 @@ if (!usuarios) {
               <div className="col-md-4">
                 <div
                   className="card-custom p-4 text-center"
-                  style={{background: "linear-gradient(135deg, #fae8ff 0%, #e9d5ff 100%)"}}
+                  style={{ background: "linear-gradient(135deg, #fae8ff 0%, #e9d5ff 100%)" }}
                 >
                   <i
                     className="bi bi-people fs-1 mb-2"
-                    style={ {color: "var(--primary-color)"}}
+                    style={{ color: "var(--primary-color)" }}
                   ></i>
                   <h3 className="mb-0">MURCIA2024</h3>
                   <p className="text-dark mb-0">Tu código de referido</p>
@@ -573,7 +581,7 @@ if (!usuarios) {
                 <div className="card-custom p-4 text-center">
                   <i
                     className="bi bi-credit-card fs-1 mb-2"
-                    style={ {color: "var(--primary-color)"}}
+                    style={{ color: "var(--primary-color)" }}
                   ></i>
                   <h3 className="mb-0">125€</h3>
                   <p className="text-muted mb-0">Total gastado</p>
@@ -659,11 +667,11 @@ if (!usuarios) {
           {/* <!-- Settings Tab --> */}
           <div className="tab-pane fade" id="tabSettings">
             <div className="card-custom p-4 mb-4">
-              <h4 className="mb-4">
-                <i className="bi bi-person me-2"></i>Información de la Cuenta
+              <h4 className="mb-4 text-dark">
+                <i className="bi bi-person me-2"></i>Modifica tus datos 
               </h4>
-                            
-              {/* <form onSubmit={procesa}>
+
+              <form onSubmit={procesa}>
                 <div className="mb-3">
                   <label className="form-label">Nombre</label>
                   <input
@@ -684,12 +692,23 @@ if (!usuarios) {
                     required
                   />
                 </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Nombre de usuario</label>
+                  <input 
+                    type="text" 
+                    className="form-control"
+                    name="nuevoUsername"
+                    defaultValue={usuarios.nombreUsuario}
+                    required
+                  />
+                </div>         
                 <div className="mb-3">
                   <label className="form-label">Email</label>
                   <input
                     type="email"
                     className="form-control"
-                    value={usuarios.user}
+                    value={usuarios.email}
                     disabled
                   />
                   <small className="text-muted">
@@ -699,74 +718,7 @@ if (!usuarios) {
                 <button type="submit" className="btn btn-primary-custom">
                   <i className="bi bi-check-circle me-2"></i>Guardar cambios
                 </button>
-              </form> */}
-            </div>
-
-            <div className="card-custom p-4 mb-4">
-              <h4 className="mb-4">
-                <i className="bi bi-palette me-2"></i>Apariencia
-              </h4>
-              <div className="form-check form-switch mb-3">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="darkModeSwitch"
-                  onchange="toggleDarkMode()"
-                />
-                <label className="form-check-label" for="darkModeSwitch">
-                  <i className="bi bi-moon-stars-fill me-2"></i>Modo oscuro
-                  <p className="text-muted small mb-0 mt-1">
-                    Cambia la apariencia de la aplicación a un tema oscuro
-                  </p>
-                </label>
-              </div>
-            </div>
-
-            <div className="card-custom p-4 mb-4">
-              <h4 className="mb-4">
-                <i className="bi bi-bell me-2"></i>Notificaciones
-              </h4>
-              <div className="form-check form-switch mb-3">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="emailNotifications"
-                  checked
-                />
-                <label className="form-check-label" for="emailNotifications">
-                  <i className="bi bi-envelope me-2"></i>Notificaciones por email
-                  <p className="text-muted small mb-0 mt-1">
-                    Recibe avisos sobre eventos y ofertas
-                  </p>
-                </label>
-              </div>
-              <div className="form-check form-switch mb-3">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="pushNotifications"
-                  checked
-                />
-                <label className="form-check-label" for="pushNotifications">
-                  <i className="bi bi-bell me-2"></i>Notificaciones push
-                  <p className="text-muted small mb-0 mt-1">
-                    Recibe notificaciones en tiempo real
-                  </p>
-                </label>
-              </div>
-              <div className="form-check form-switch">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="smsNotifications"
-                />
-                <label className="form-check-label" for="smsNotifications">
-                  <i className="bi bi-phone me-2"></i>Notificaciones por SMS
-                  <p className="text-muted small mb-0 mt-1">
-                    Recibe recordatorios de eventos por SMS
-                  </p>
-                </label>
-              </div>
+              </form>
             </div>
 
             <div className="card-custom p-4 border-danger">
@@ -779,7 +731,7 @@ if (!usuarios) {
               </p>
               <button
                 className="btn btn-danger w-100"
-                onClick={() => eliminarUsuario(usuarios.id)}
+                onClick={() => eliminarCuenta(usuarios.id)}
               >
                 <i className="bi bi-trash me-2"></i>Eliminar cuenta permanentemente
               </button>

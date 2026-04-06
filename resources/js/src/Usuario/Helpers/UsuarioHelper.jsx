@@ -85,33 +85,42 @@ export const UsuarioHelperProvider = ({ children }) => {
         navigate("/")
     };
 
-
-    const addEvento = async (formData) => {
+    const cambiarDatos = async () => {
         try {
-            const response = await fetch(`${URL_LARAVEL}/addEvento`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
 
-            const data = await response.json();
-
-            if(!response.ok){
-                throw data;
-            }
-
-            return data;
-        }catch (error){
-            console.log(error);
+        } catch (error) {
+            console.error("Error al modificar tus datos", error);
+            return { success: false, error: error.message };
         }
-        
     }
+
+const eliminarCuenta = async (idUsuario) => {
+    try {
+        const response = await fetch(`${URL_SPRING}/eliminarCuenta/${idUsuario}`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json'   
+            }
+        });
+
+        if (response.ok) {
+            logout(); // Usamos tu función de logout que ya limpia todo
+            alert("Has borrado tu cuenta");
+        } else if (response.status === 401) {
+            // ¡AQUÍ CAZAMOS EL ERROR! Si da 401, el token caducó o es inválido.
+            alert("Tu sesión ha caducado por seguridad. Vuelve a iniciar sesión.");
+            logout(); // Expulsamos al usuario para que renueve el token
+        } else {
+            console.error("No se ha podido borrar");
+        }
+    } catch (error) {
+        console.error("Error al eliminar tu cuenta", error);
+    }
+}
 
     return (
         <UsuarioHelperContext.Provider
-            value={{ usuarios, setUsuarios, token, login, logout, register }}
+            value={{ usuarios, setUsuarios, token, login, logout, register, cambiarDatos, eliminarCuenta }}
         >
             {children}
         </UsuarioHelperContext.Provider>
