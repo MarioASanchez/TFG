@@ -9,6 +9,5 @@ class Evento_Etiqueta extends Model
     protected $fillable = [
         'evento_id',
         'etiqueta_id',
-
     ];
 }

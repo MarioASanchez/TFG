@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Etiqueta extends Model
 {
      protected $fillable = [
-        'nombreEtiquetaa'
+        'nombreEtiqueta'
     ];
 }

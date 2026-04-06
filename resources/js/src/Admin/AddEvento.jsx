@@ -32,6 +32,15 @@ function AddEvento() {
         formData.append('precio', ev.target.precio.value);
         formData.append('imagen', imagenFile);
 
+        // Tratamiento de las etiquetas
+        const etiquetasString = ev.target.etiqueta.value;
+
+        const etiquetasArray = etiquetasString.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+
+        etiquetasArray.forEach(tag => {
+            formData.append('etiquetas[]', tag);
+        });
+
         // Enviar petición a Laravel
         try{
             await addEvento(formData);
@@ -80,7 +89,7 @@ function AddEvento() {
                     </div>
                     <div className="form-group">
                         <label>Etiquetas (añádelas separadas por comas ",")</label>
-                        <input type="text" name="etiqueta" className="form-control" required/> <br />
+                        <input type="text" name="etiqueta" className="form-control" required placeholder="Deportes, Música, Rock, Casual"/> <br />
                     </div>
                     <div className="form-group">
                         <label>Sube la imagen destacada del evento</label>
