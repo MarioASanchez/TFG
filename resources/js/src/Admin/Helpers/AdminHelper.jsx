@@ -73,8 +73,6 @@ export const AdminHelperProvider = ({ children }) => {
 
             const usuarioActualizado = await response.json();
 
-            // 💡 OPTIMIZACIÓN: Actualizamos el estado local inmediatamente
-            // Buscamos al usuario en nuestra lista y lo reemplazamos con el que viene del server
             setDatosUsuarios((prevUsuarios) =>
                 prevUsuarios.map((u) => (u.id === id ? usuarioActualizado : u))
             );

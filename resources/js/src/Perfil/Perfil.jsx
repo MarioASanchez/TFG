@@ -12,15 +12,18 @@ import { IndexHelperContext } from "../Index/helpers/IndexHelper";
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 
 function Perfil() {
-  let { usuarios, eliminarCuenta } = useContext(UsuarioHelperContext)
+  let { usuarios, eliminarCuenta, cambiarDatos } = useContext(UsuarioHelperContext)
 
   function procesa(ev) {
     ev.preventDefault();
     const datosNuevos = {
+      id: usuarios.id,
       nuevoNombre: ev.target.nuevoNombre.value,
       nuevoApellido: ev.target.nuevoApellido.value,
       nuevoUsername: ev.target.nuevoUsername.value
     }
+
+    cambiarDatos(datosNuevos)
     
   }
 

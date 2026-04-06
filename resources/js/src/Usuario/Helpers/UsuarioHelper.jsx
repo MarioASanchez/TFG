@@ -31,8 +31,7 @@ export const UsuarioHelperProvider = ({ children }) => {
                         email: obj.email,
                         password: obj.password
                     })
-                }
-            );
+                });
 
             if (!response.ok) throw new Error("Credenciales incorrectas");
 
@@ -85,9 +84,21 @@ export const UsuarioHelperProvider = ({ children }) => {
         navigate("/")
     };
 
-    const cambiarDatos = async () => {
+    const cambiarDatos = async (obj) => {
         try {
+            const response = await fetch(`${URL_SPRING}/cambiarDatos/${obj.id}`,{
+                method: "PATCH",
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    nombreUsuario: obj.nuevoUsername,
+                    nombre: obj.nuevoNombre,
+                    apellidos: obj.nuevoApellido
 
+                })
+            });
+
+            if(!response.ok) throw new Error("Error al modificar tus datos")
+                
         } catch (error) {
             console.error("Error al modificar tus datos", error);
             return { success: false, error: error.message };
