@@ -104,12 +104,11 @@ const eliminarCuenta = async (idUsuario) => {
         });
 
         if (response.ok) {
-            logout(); // Usamos tu función de logout que ya limpia todo
+            logout(); 
             alert("Has borrado tu cuenta");
         } else if (response.status === 401) {
-            // ¡AQUÍ CAZAMOS EL ERROR! Si da 401, el token caducó o es inválido.
             alert("Tu sesión ha caducado por seguridad. Vuelve a iniciar sesión.");
-            logout(); // Expulsamos al usuario para que renueve el token
+            logout(); 
         } else {
             console.error("No se ha podido borrar");
         }
