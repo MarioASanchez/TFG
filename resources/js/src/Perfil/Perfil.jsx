@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
+import { mostrarExito, mostrarError } from "../shared/Helpers/Notificaciones";
 
 function Perfil() {
   let { usuarios, eliminarCuenta, cambiarDatos, guardarPreferencias } = useContext(UsuarioHelperContext)
@@ -25,7 +26,7 @@ function Perfil() {
       nuevoApellido: ev.target.nuevoApellido.value,
       nuevoUsername: ev.target.nuevoUsername.value
     }
-
+    
     cambiarDatos(datosNuevos)
 
   }
@@ -55,9 +56,9 @@ function Perfil() {
     try {
       // Llamamos a la función del Helper 
       await guardarPreferencias(usuarios.id, seleccionadas);
-      alert("¡Tus gustos han sido guardados!");
+      mostrarExito("Preferencias guardadas con éxito")
     } catch (error) {
-      alert("Error al guardar: " + error.message);
+      mostrarError("Woopsie")
     }
   };
 

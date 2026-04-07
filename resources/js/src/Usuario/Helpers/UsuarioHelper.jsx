@@ -1,5 +1,7 @@
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { mostrarError, mostrarExito } from "../../shared/Helpers/Notificaciones";
+
 
 export const UsuarioHelperContext = createContext();
 
@@ -100,7 +102,7 @@ export const UsuarioHelperProvider = ({ children }) => {
             if (!response.ok) throw new Error("Error al modificar tus datos")
 
         } catch (error) {
-            console.error("Error al modificar tus datos", error);
+            mostrarError("Ese nombre de usuario ya está escogido...")
             return { success: false, error: error.message };
         }
     }
