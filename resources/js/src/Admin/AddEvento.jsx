@@ -7,6 +7,7 @@ import Footer from "../shared/Footer";
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 import { useNavigate } from "react-router-dom";
 import { AdminHelperContext } from "./Helpers/AdminHelper";
+import { mostrarError, mostrarExito } from "../shared/Helpers/Notificaciones";
 
 function AddEvento() {
     const { usuarios } = useContext(UsuarioHelperContext)
@@ -44,12 +45,12 @@ function AddEvento() {
         // Enviar petición a Laravel
         try{
             await addEvento(formData);
-            alert("Evento añadido con éxito")
+            mostrarExito("Evento añadido con éxito")
             navigate("/")
             ev.target.reset();
         }catch (error){
-            console.error("Error al guardar")
-            alert(error.message || "No se ha podido guardar el evento")
+            console.error(error.message)
+            mostrarError( "No se ha podido guardar el evento")
         }
     }
 

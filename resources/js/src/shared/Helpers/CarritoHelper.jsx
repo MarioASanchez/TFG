@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { UsuarioHelperContext } from "../../Usuario/Helpers/UsuarioHelper";
+import { mostrarError, mostrarExito } from "./Notificaciones";
 
 export const CarritoContext = createContext();
 
@@ -55,7 +56,7 @@ export const CarritoProvider = ({ children }) => {
         // Validación de seguridad: el usuario debe estar logueado y tener un ID válido en su sesión
         if (!usuarios || !usuarios.id) {
             console.error("Usuario o ID no encontrado:", usuarios);
-            alert("Error: No se ha podido identificar al usuario. Por favor, cierra sesión y vuelve a entrar.");
+            mostrarError("Error: No se ha podido identificar al usuario. Por favor, cierra sesión y vuelve a entrar.");
             return { success: false, error: "Missing user ID" };
         }
 
@@ -87,11 +88,11 @@ export const CarritoProvider = ({ children }) => {
             }
 
             clearCart();
-            alert("¡Compra realizada con éxito!");
+            mostrarExito("¡Compra realizada con éxito!");
             return { success: true };
         } catch (error) {
             console.error("Error checkout:", error);
-            alert("Error: " + error.message);
+            mostrarError("Error: " + error.message);
             return { success: false, error: error.message };
         }
     };
