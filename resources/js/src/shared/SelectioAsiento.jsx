@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { CarritoContext } from "./Helpers/CarritoHelper";
+import { obtenerUrlImagen } from "./Helpers/ImagenHelper";
 
 function SelectioAsiento({ show, handleClose, evento, alConfirmarCompra }) {
   const { addToCart } = useContext(CarritoContext);
@@ -121,7 +122,7 @@ function SelectioAsiento({ show, handleClose, evento, alConfirmarCompra }) {
           <div className="modal-body pt-3">
             <div className="mb-4 text-center">
               <img
-                src={evento.imagen.startsWith("http") ? evento.imagen : `/storage/${evento.imagen}`}
+                src={obtenerUrlImagen(evento.imagen)}
                 alt={evento.nombre}
                 className="rounded-3 shadow-sm"
                 style={{ maxHeight: "250px", width: "auto", maxWidth: "100%" }}

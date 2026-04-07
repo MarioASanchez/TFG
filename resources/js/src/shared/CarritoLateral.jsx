@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { CarritoContext } from "./Helpers/CarritoHelper";
+import { obtenerUrlImagen } from "./Helpers/ImagenHelper";
 
 const CarritoLateral = () => {
     const { cart, removeFromCart, updateQuantity, clearCart, checkout } = useContext(CarritoContext);
@@ -25,7 +26,7 @@ const CarritoLateral = () => {
                             <div key={item.claveCarrito ?? item.id} className="card-dark p-3 mb-3 shadow-sm">
                                 <div className="d-flex align-items-center mb-3">
                                     <img
-                                        src={item.imagen.startsWith("http") ? item.imagen : `/storage/${item.imagen}`}
+                                        src={obtenerUrlImagen(item.imagen)}
                                         alt={item.nombre}
                                         className="rounded shadow-sm me-3"
                                         style={{ width: "50px", height: "50px", objectFit: "cover" }}

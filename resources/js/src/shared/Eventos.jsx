@@ -3,14 +3,7 @@ import "../Index/styles.css";
 import Footer from "./Footer";
 import Header from "./Header";
 import DetalleEventoModal from "./DetalleEventoModal";
-
-function obtenerImagenEvento(evento) {
-  if (!evento?.imagen) {
-    return "https://placehold.co/1200x800?text=Evento";
-  }
-
-  return evento.imagen.startsWith("http") ? evento.imagen : `/storage/${evento.imagen}`;
-}
+import { obtenerUrlImagen } from "./Helpers/ImagenHelper";
 
 function formatearFecha(fecha) {
   if (!fecha) {
@@ -70,7 +63,7 @@ function Eventos() {
                       onClick={() => abrirModalEvento(evento)}
                     >
                       <img
-                        src={obtenerImagenEvento(evento)}
+                        src={obtenerUrlImagen(evento.imagen)}
                         className="w-100 card-img-small"
                         alt={evento.nombre}
                       />

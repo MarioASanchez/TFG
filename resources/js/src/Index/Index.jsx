@@ -7,6 +7,7 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IndexHelperContext } from "./helpers/IndexHelper";
 import DetalleEventoModal from "../shared/DetalleEventoModal";
+import { obtenerUrlImagen } from "../shared/Helpers/ImagenHelper";
 
 function Index() {
     const navigate = useNavigate();
@@ -224,7 +225,7 @@ function Index() {
                                         onClick={() => verDetallesEvento(elemento)}
                                     >
                                         <img
-                                            src={elemento.imagen.startsWith("http") ? elemento.imagen : `/storage/${elemento.imagen}`}
+                                            src={obtenerUrlImagen(elemento.imagen)}
                                             className="w-100 card-img-small"
                                             alt={elemento.nombre}
                                         />

@@ -1,5 +1,6 @@
 import React from "react";
 import SelectioAsiento from "./SelectioAsiento";
+import { obtenerUrlImagen } from "./Helpers/ImagenHelper";
 
 function formatearFecha(fecha) {
   if (!fecha) {
@@ -13,14 +14,6 @@ function formatearFecha(fecha) {
     hour: "2-digit",
     minute: "2-digit"
   });
-}
-
-function obtenerImagenEvento(evento) {
-  if (!evento?.imagen) {
-    return "https://placehold.co/1200x800?text=Evento";
-  }
-
-  return evento.imagen.startsWith("http") ? evento.imagen : `/storage/${evento.imagen}`;
 }
 
 function DetalleEventoModal({ mostrar, cerrarModal, evento }) {
@@ -73,7 +66,7 @@ function DetalleEventoModal({ mostrar, cerrarModal, evento }) {
             <div className="modal-content modal-content-custom border-0 overflow-hidden shadow-lg">
               <div className="position-relative">
                 <img
-                  src={obtenerImagenEvento(evento)}
+                  src={obtenerUrlImagen(evento.imagen)}
                   alt={evento.nombre}
                   className="w-100 detalle-evento-imagen"
                 />
