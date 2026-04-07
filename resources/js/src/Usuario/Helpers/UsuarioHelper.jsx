@@ -86,9 +86,9 @@ export const UsuarioHelperProvider = ({ children }) => {
 
     const cambiarDatos = async (obj) => {
         try {
-            const response = await fetch(`${URL_SPRING}/cambiarDatos/${obj.id}`,{
+            const response = await fetch(`${URL_SPRING}/cambiarDatos/${obj.id}`, {
                 method: "PATCH",
-                headers: { 'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     nombreUsuario: obj.nuevoUsername,
                     nombre: obj.nuevoNombre,
@@ -97,40 +97,63 @@ export const UsuarioHelperProvider = ({ children }) => {
                 })
             });
 
-            if(!response.ok) throw new Error("Error al modificar tus datos")
-                
+            if (!response.ok) throw new Error("Error al modificar tus datos")
+
         } catch (error) {
             console.error("Error al modificar tus datos", error);
             return { success: false, error: error.message };
         }
     }
 
-const eliminarCuenta = async (idUsuario) => {
-    try {
-        const response = await fetch(`${URL_SPRING}/eliminarCuenta/${idUsuario}`, {
-            method: "DELETE",
-            headers: {
-                'Content-Type': 'application/json'   
+    const eliminarCuenta = async (idUsuario) => {
+        try {
+            const response = await fetch(`${URL_SPRING}/eliminarCuenta/${idUsuario}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                logout();
+                alert("Has borrado tu cuenta");
+            } else if (response.status === 401) {
+                alert("Tu sesión ha caducado por seguridad. Vuelve a iniciar sesión.");
+                logout();
+            } else {
+                console.error("No se ha podido borrar");
             }
+        } catch (error) {
+            console.error("Error al eliminar tu cuenta", error);
+        }
+    }
+
+    const guardarPreferencias = async (idUsuario, idsEtiquetas) => {
+        const payload = {
+            idUsuario: idUsuario,
+            idsEtiquetas: idsEtiquetas
+        };
+        console.log("Enviando a Spring:", JSON.stringify(payload));
+        const response = await fetch(`${URL_SPRING}/preferencias`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
         });
 
-        if (response.ok) {
-            logout(); 
-            alert("Has borrado tu cuenta");
-        } else if (response.status === 401) {
-            alert("Tu sesión ha caducado por seguridad. Vuelve a iniciar sesión.");
-            logout(); 
-        } else {
-            console.error("No se ha podido borrar");
+        if (!response.ok) {
+            const errorMsg = await response.text();
+            throw new Error(errorMsg || "Hubo un problema al guardar las etiquetas en el servidor");
         }
-    } catch (error) {
-        console.error("Error al eliminar tu cuenta", error);
-    }
-}
+   
+        return await response.text();
+    };
 
     return (
         <UsuarioHelperContext.Provider
-            value={{ usuarios, setUsuarios, token, login, logout, register, cambiarDatos, eliminarCuenta }}
+            value={{ usuarios, setUsuarios, token, login, logout, register, cambiarDatos, eliminarCuenta, guardarPreferencias }}
         >
             {children}
         </UsuarioHelperContext.Provider>

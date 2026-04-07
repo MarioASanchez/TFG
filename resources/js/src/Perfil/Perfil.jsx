@@ -1,18 +1,21 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 import "./perfil.css";
-import React from "react";
 
 import Footer from "../shared/Footer";
 import Header from "../shared/Header";
 
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { IndexHelperContext } from "../Index/helpers/IndexHelper";
+
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 
 function Perfil() {
-  let { usuarios, eliminarCuenta, cambiarDatos } = useContext(UsuarioHelperContext)
+  let { usuarios, eliminarCuenta, cambiarDatos, guardarPreferencias } = useContext(UsuarioHelperContext)
+  const [etiquetas, setEtiquetas] = useState([]);
+  const [seleccionadas, setSeleccionadas] = useState([]);
+  const URL_LARAVEL = import.meta.env.VITE_API_EVENTS_URL;
+
 
   function procesa(ev) {
     ev.preventDefault();
@@ -24,8 +27,40 @@ function Perfil() {
     }
 
     cambiarDatos(datosNuevos)
-    
+
   }
+
+  // MANEJO DE LAS ETIQUETAS
+  useEffect(() => {
+    const cargarTags = async () => {
+      const res = await fetch(`${URL_LARAVEL}/etiquetas`);
+      const data = await res.json();
+      setEtiquetas(data);
+    };
+    cargarTags();
+  }, []);
+
+
+  // 1. Función para añadir o quitar IDs del array
+  const manejarCheck = (id) => {
+    setSeleccionadas((prev) =>
+      prev.includes(id)
+        ? prev.filter(item => item !== id) // Si ya está, lo quita
+        : [...prev, id]                   // Si no está, lo añade
+    );
+  };
+
+  // 2. Función para disparar el guardado de las etiquetas
+  const enviarPreferencias = async () => {
+    try {
+      // Llamamos a la función del Helper 
+      await guardarPreferencias(usuarios.id, seleccionadas);
+      alert("¡Tus gustos han sido guardados!");
+    } catch (error) {
+      alert("Error al guardar: " + error.message);
+    }
+  };
+
 
   if (!usuarios) {
     return <p>Cargando datos del perfil...</p>;
@@ -669,9 +704,50 @@ function Perfil() {
 
           {/* <!-- Settings Tab --> */}
           <div className="tab-pane fade" id="tabSettings">
+            {/* */}
             <div className="card-custom p-4 mb-4">
               <h4 className="mb-4 text-dark">
-                <i className="bi bi-person me-2"></i>Modifica tus datos 
+                <i className="bi bi-tags me-2"></i>Tus Preferencias
+              </h4>
+              <p className="text-muted mb-4">
+                Selecciona los tipos de eventos que más te gustan. Utilizaremos esto para recomendarte eventos personalizados.
+              </p>
+
+              <div className="row mb-4">
+                {etiquetas.map((tag) => (
+                  <div key={tag.id} className="col-6 col-md-4 col-lg-3 mb-3">
+                    <div className="form-check custom-checkbox-card p-2 border rounded text-center">
+                      <input
+                        className="form-check-input d-none" 
+                        type="checkbox"
+                        id={`tag-${tag.id}`}
+                        checked={seleccionadas.includes(tag.id)}
+                        onChange={() => manejarCheck(tag.id)}
+                      />
+                      <label
+                        className={`form-check-label w-100 cursor-pointer ${seleccionadas.includes(tag.id) ? 'fw-bold text-primary' : 'text-dark'}`}
+                        htmlFor={`tag-${tag.id}`}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {seleccionadas.includes(tag.id) && <i className="bi bi-check2 me-1"></i>}
+                        {tag.nombreEtiqueta.charAt(0).toUpperCase() + tag.nombreEtiqueta.slice(1)}
+                      </label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-primary-custom"
+                onClick={enviarPreferencias}
+              >
+                <i className="bi bi-save me-2"></i>Guardar mis gustos
+              </button>
+            </div>
+            <div className="card-custom p-4 mb-4">
+              <h4 className="mb-4 text-dark">
+                <i className="bi bi-person me-2"></i>Modifica tus datos
               </h4>
 
               <form onSubmit={procesa}>
@@ -698,14 +774,14 @@ function Perfil() {
 
                 <div className="mb-3">
                   <label className="form-label">Nombre de usuario</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className="form-control"
                     name="nuevoUsername"
                     defaultValue={usuarios.nombreUsuario}
                     required
                   />
-                </div>         
+                </div>
                 <div className="mb-3">
                   <label className="form-label">Email</label>
                   <input

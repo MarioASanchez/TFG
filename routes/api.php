@@ -8,3 +8,5 @@ Route::get('/eventos' , [EntradaController::class , 'verProductos']);
 Route::post('/upload', [FileUploadController::class, 'store']);
 // Añadir los eventos
 Route::post('/addEvento', [EntradaController::class, 'addEvento']);
+// Recuperar las etiquetas
+Route::get('/etiquetas', [EntradaController::class, 'getEtiquetas']);

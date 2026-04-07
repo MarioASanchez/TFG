@@ -377,3 +377,17 @@
                 white-space: nowrap;
             }
         }
+        
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.custom-checkbox-card:hover {
+  background-color: #f8f9fa;
+  border-color: var(--bs-primary) !important;
+}
+
+/* Si la etiqueta está seleccionada, le damos un fondo suave */
+input:checked + label {
+  color: #0d6efd;
+}

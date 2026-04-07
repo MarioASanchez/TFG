@@ -12,7 +12,8 @@ use Illuminate\Http\Request;
 
 class EntradaController
 {
-    function verProductos(){
+    function verProductos()
+    {
         $eventos = DB::table('eventos')
             ->join('entradas', 'eventos.id', '=', 'entradas.evento_id')
             ->select('eventos.*', 'entradas.precio', 'entradas.cantidad as stock')
@@ -21,7 +22,8 @@ class EntradaController
     }
 
     // Función para añadir los Eventos
-    public function addEvento(Request $request){
+    public function addEvento(Request $request)
+    {
         $request->validate([
             'nombre' => 'required|string',
             'imagen' => 'required|image|max:2048',
@@ -32,9 +34,9 @@ class EntradaController
         ]);
 
         // Transacción para evitar eventos sin entradas
-        return DB::transaction(function () use ($request){
+        return DB::transaction(function () use ($request) {
             // Guardar la imagen
-            $path = $request->file('imagen')->store('eventos','public');
+            $path = $request->file('imagen')->store('eventos', 'public');
 
             // Crear el evento
             $evento = Evento::create([
@@ -57,28 +59,26 @@ class EntradaController
 
             // Crear las etiquetas
             if ($request->has('etiquetas')) {
-            $tagIds = [];
+                $tagIds = [];
 
-            foreach ($request->etiquetas as $nombre) {
-                // Si no existe, crea la etiqueta
-                // trim() y strtolower() para evitar duplicados por espacios o mayúsculas
-                $tag = Etiqueta::firstOrCreate(
-                    ['nombreEtiqueta' => trim(strtolower($nombre))]
-                );
-                $tagIds[] = $tag->id;
+                foreach ($request->etiquetas as $nombre) {
+                    // Si no existe, crea la etiqueta
+                    // trim() y strtolower() para evitar duplicados por espacios o mayúsculas
+                    $tag = Etiqueta::firstOrCreate(
+                        ['nombreEtiqueta' => trim(strtolower($nombre))]
+                    );
+                    $tagIds[] = $tag->id;
+                }
+
+                $evento->tags()->sync($tagIds);
             }
-
-            $evento->tags()->sync($tagIds);
-        } 
 
             return response()->json(['message' => 'Evento generado con éxito'], 201);
         });
-
-     
-
-        
     }
 
 
-
+    public function getEtiquetas(){
+        return response()->json(Etiqueta::all(), 200);
+    }
 }
