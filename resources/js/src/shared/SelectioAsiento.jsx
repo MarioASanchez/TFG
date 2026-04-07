@@ -1,85 +1,110 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { CarritoContext } from "./Helpers/CarritoHelper";
 
 function SelectioAsiento({ show, handleClose, evento }) {
   const { addToCart } = useContext(CarritoContext);
-  // Estado para los asientos que el usuario está seleccionando actualmente
-  const [selectedSeats, setSelectedSeats] = React.useState([]);
-  // Estado para los asientos que ya están vendidos (vienen de la base de datos)
-  const [occupiedSeats, setOccupiedSeats] = React.useState([]);
+  const [asientosSeleccionados, setAsientosSeleccionados] = React.useState([]);
+  const [asientosOcupados, setAsientosOcupados] = React.useState([]);
 
-  // Cada vez que se abre el modal, reseteamos la selección y buscamos los asientos ocupados
   React.useEffect(() => {
     if (show && evento) {
-      setSelectedSeats([]);
-      // Llamada al backend de Spring Boot para obtener la lista de asientos vendidos para este evento
+      setAsientosSeleccionados([]);
       fetch(`${import.meta.env.VITE_API_USERS_URL}/api/compras/evento/${evento.id}`)
-        .then(res => res.json())
-        .then(data => setOccupiedSeats(data))
-        .catch(err => console.error("Error al cargar asientos ocupados:", err));
+        .then((respuesta) => respuesta.json())
+        .then((datos) => setAsientosOcupados(datos))
+        .catch((error) => console.error("Error al cargar asientos ocupados:", error));
     }
   }, [show, evento]);
 
   if (!show || !evento) return null;
 
-  // Forzamos que el precio sea un número para evitar errores de suma
-  const basePrice = Number(evento.precio) || 0;
+  const precioBase = Number(evento.precio) || 0;
 
-  // Función para marcar/desmarcar un asiento (si no está ya ocupado)
-  const toggleSeat = (seatId, price) => {
-    if (occupiedSeats.includes(seatId)) return; // No permitir tocar asientos ocupados
-    setSelectedSeats(prev => {
-      const isSelected = prev.find(s => s.id === seatId);
-      if (isSelected) {
-        return prev.filter(s => s.id !== seatId); // Deseleccionar
-      } else {
-        return [...prev, { id: seatId, precio: Number(price) }]; // Seleccionar
+  const alternarAsiento = (idAsiento, precio, tipoEntrada) => {
+    if (asientosOcupados.includes(idAsiento)) return;
+
+    setAsientosSeleccionados((asientosPrevios) => {
+      const asientoSeleccionado = asientosPrevios.find((asiento) => asiento.id === idAsiento);
+
+      if (asientoSeleccionado) {
+        return asientosPrevios.filter((asiento) => asiento.id !== idAsiento);
       }
+
+      return [
+        ...asientosPrevios,
+        { id: idAsiento, precio: Number(precio), tipoEntrada }
+      ];
     });
   };
 
-  const totalPrice = selectedSeats.reduce((acc, seat) => acc + Number(seat.precio), 0);
-  const pointsToEarn = Math.floor(totalPrice * 0.1);
+  const precioTotal = asientosSeleccionados.reduce(
+    (acumulado, asiento) => acumulado + Number(asiento.precio),
+    0
+  );
+  const puntosAGanar = Math.floor(precioTotal * 0.1);
 
   const handleComprar = () => {
-    if (selectedSeats.length === 0) {
+    if (asientosSeleccionados.length === 0) {
       alert("Por favor, selecciona al menos un asiento.");
       return;
     }
-    
-    // Creamos un objeto de "evento personalizado" que incluye los asientos elegidos
-    const customEvento = {
-        ...evento,
-        // Generamos un ID único temporal para el carrito (evita duplicados si se compra el mismo evento dos veces)
-        id: `${evento.id}-seats-${Date.now()}`,
-        nombre: `${evento.nombre} (${selectedSeats.length} entradas)`,
-        precio: totalPrice,
-        asientos: selectedSeats.map(s => s.id) // Guardamos la lista de IDs de asientos (ej. A1, A2)
-    };
-    
-    addToCart(customEvento); // Lo añadimos al carrito helper
-    setSelectedSeats([]);
+
+    // Agrupamos los asientos por tipo para que el carrito muestre una linea por zona.
+    const entradasPorTipo = asientosSeleccionados.reduce((acumulador, asiento) => {
+      if (!acumulador[asiento.tipoEntrada]) {
+        acumulador[asiento.tipoEntrada] = {
+          id: `${evento.id}-${asiento.tipoEntrada.toLowerCase()}`,
+          claveCarrito: `${evento.id}-${asiento.tipoEntrada.toLowerCase()}`,
+          idEvento: evento.id,
+          nombre: evento.nombre,
+          imagen: evento.imagen,
+          tipoEntrada: asiento.tipoEntrada,
+          precio: Number(asiento.precio),
+          cantidad: 0,
+          asientos: []
+        };
+      }
+
+      acumulador[asiento.tipoEntrada].cantidad += 1;
+      acumulador[asiento.tipoEntrada].asientos.push(asiento.id);
+
+      return acumulador;
+    }, {});
+
+    // Cada grupo se envia como una entrada independiente al carrito.
+    Object.values(entradasPorTipo).forEach((entrada) => addToCart(entrada));
+    setAsientosSeleccionados([]);
     handleClose();
   };
 
   const aforo = evento.aforo || 30;
-  const vipCount = Math.floor(aforo * 0.1);
-  const prefCount = Math.floor(aforo * 0.2);
-  const genCount = aforo - vipCount - prefCount;
+  const cantidadVip = Math.floor(aforo * 0.1);
+  const cantidadPreferente = Math.floor(aforo * 0.2);
+  const cantidadGeneral = aforo - cantidadVip - cantidadPreferente;
 
-  const vipSeats = Array.from({ length: vipCount }, (_, i) => `A${i + 1}`);
-  const prefSeats = Array.from({ length: prefCount }, (_, i) => `B${i + 1}`);
-  const genSeats = Array.from({ length: genCount }, (_, i) => `D${i + 1}`);
+  const asientosVip = Array.from({ length: cantidadVip }, (_, indice) => `A${indice + 1}`);
+  const asientosPreferente = Array.from(
+    { length: cantidadPreferente },
+    (_, indice) => `B${indice + 1}`
+  );
+  const asientosGeneral = Array.from(
+    { length: cantidadGeneral },
+    (_, indice) => `D${indice + 1}`
+  );
 
   return (
-    <div className={`modal fade ${show ? 'show d-block' : ''}`} tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div
+      className={`modal fade ${show ? "show d-block" : ""}`}
+      tabIndex="-1"
+      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+    >
       <div className="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
         <div className="modal-content modal-content-custom bg-white">
           <div className="modal-header border-0 pb-0">
             <div>
               <h2 className="modal-title h3 fw-bold text-dark">{evento.nombre}</h2>
               <p className="text-muted mb-0">
-                {evento.localizacion || 'Teatro Circular'} • {evento.fechaInicio}
+                {evento.localizacion || "Teatro Circular"} • {evento.fechaInicio}
               </p>
             </div>
             <button
@@ -92,15 +117,17 @@ function SelectioAsiento({ show, handleClose, evento }) {
           <div className="modal-body pt-3">
             <div className="mb-4 text-center">
               <img
-                src={evento.imagen.startsWith('http') ? evento.imagen : `/storage/${evento.imagen}`}
+                src={evento.imagen.startsWith("http") ? evento.imagen : `/storage/${evento.imagen}`}
                 alt={evento.nombre}
                 className="rounded-3 shadow-sm"
-                style={{ maxHeight: "250px", width: 'auto', maxWidth: '100%' }}
+                style={{ maxHeight: "250px", width: "auto", maxWidth: "100%" }}
               />
             </div>
 
-            <h3 className="h5 fw-bold mb-4 text-center text-dark">Selector de Asientos (Aforo: {aforo})</h3>
-            
+            <h3 className="h5 fw-bold mb-4 text-center text-dark">
+              Selector de Asientos (Aforo: {aforo})
+            </h3>
+
             <div className="stage mb-5">ESCENARIO</div>
 
             <div className="seat-legend mb-4 d-flex justify-content-center gap-4">
@@ -118,58 +145,101 @@ function SelectioAsiento({ show, handleClose, evento }) {
               </div>
             </div>
 
-            {/* Zona VIP */}
-            {vipCount > 0 && (
+            {cantidadVip > 0 && (
               <div className="mb-4 text-center">
-                <h4 className="h6 fw-bold mb-3 text-warning">Zona VIP - {(basePrice * 1.5).toFixed(2)}€</h4>
-                <div className="d-flex justify-content-center flex-wrap gap-1 mx-auto" style={{maxWidth: '800px'}}>
-                  {vipSeats.map(id => {
-                      const isOccupied = occupiedSeats.includes(id);
-                      return (
-                        <span 
-                            key={id} 
-                            className={`seat ${isOccupied ? 'occupied' : selectedSeats.find(s => s.id === id) ? 'selected' : 'available'}`}
-                            onClick={() => !isOccupied && toggleSeat(id, basePrice * 1.5)}
-                        >{id}</span>
-                      );
+                <h4 className="h6 fw-bold mb-3 text-warning">
+                  Zona VIP - {(precioBase * 1.5).toFixed(2)}€
+                </h4>
+                <div
+                  className="d-flex justify-content-center flex-wrap gap-1 mx-auto"
+                  style={{ maxWidth: "800px" }}
+                >
+                  {asientosVip.map((idAsiento) => {
+                    const estaOcupado = asientosOcupados.includes(idAsiento);
+                    const estaSeleccionado = asientosSeleccionados.find(
+                      (asiento) => asiento.id === idAsiento
+                    );
+
+                    return (
+                      <span
+                        key={idAsiento}
+                        className={`seat ${
+                          estaOcupado ? "occupied" : estaSeleccionado ? "selected" : "available"
+                        }`}
+                        onClick={() =>
+                          !estaOcupado && alternarAsiento(idAsiento, precioBase * 1.5, "VIP")
+                        }
+                      >
+                        {idAsiento}
+                      </span>
+                    );
                   })}
                 </div>
               </div>
             )}
 
-            {/* Zona Preferente */}
-            {prefCount > 0 && (
+            {cantidadPreferente > 0 && (
               <div className="mb-4 text-center">
-                <h4 className="h6 fw-bold mb-3 text-info">Zona Preferente - {(basePrice * 1.2).toFixed(2)}€</h4>
-                <div className="d-flex justify-content-center flex-wrap gap-1 mx-auto" style={{maxWidth: '800px'}}>
-                  {prefSeats.map(id => {
-                      const isOccupied = occupiedSeats.includes(id);
-                      return (
-                        <span 
-                            key={id} 
-                            className={`seat ${isOccupied ? 'occupied' : selectedSeats.find(s => s.id === id) ? 'selected' : 'available'}`}
-                            onClick={() => !isOccupied && toggleSeat(id, basePrice * 1.2)}
-                        >{id}</span>
-                      );
+                <h4 className="h6 fw-bold mb-3 text-info">
+                  Zona Preferente - {(precioBase * 1.2).toFixed(2)}€
+                </h4>
+                <div
+                  className="d-flex justify-content-center flex-wrap gap-1 mx-auto"
+                  style={{ maxWidth: "800px" }}
+                >
+                  {asientosPreferente.map((idAsiento) => {
+                    const estaOcupado = asientosOcupados.includes(idAsiento);
+                    const estaSeleccionado = asientosSeleccionados.find(
+                      (asiento) => asiento.id === idAsiento
+                    );
+
+                    return (
+                      <span
+                        key={idAsiento}
+                        className={`seat ${
+                          estaOcupado ? "occupied" : estaSeleccionado ? "selected" : "available"
+                        }`}
+                        onClick={() =>
+                          !estaOcupado &&
+                          alternarAsiento(idAsiento, precioBase * 1.2, "Preferente")
+                        }
+                      >
+                        {idAsiento}
+                      </span>
+                    );
                   })}
                 </div>
               </div>
             )}
 
-            {/* Zona General */}
-            {genCount > 0 && (
+            {cantidadGeneral > 0 && (
               <div className="mb-5 text-center">
-                <h4 className="h6 fw-bold mb-3 text-success">Zona General - {basePrice.toFixed(2)}€</h4>
-                <div className="d-flex justify-content-center flex-wrap gap-1 mx-auto" style={{maxWidth: '800px'}}>
-                  {genSeats.map(id => {
-                      const isOccupied = occupiedSeats.includes(id);
-                      return (
-                        <span 
-                            key={id} 
-                            className={`seat ${isOccupied ? 'occupied' : selectedSeats.find(s => s.id === id) ? 'selected' : 'available'}`}
-                            onClick={() => !isOccupied && toggleSeat(id, basePrice)}
-                        >{id}</span>
-                      );
+                <h4 className="h6 fw-bold mb-3 text-success">
+                  Zona General - {precioBase.toFixed(2)}€
+                </h4>
+                <div
+                  className="d-flex justify-content-center flex-wrap gap-1 mx-auto"
+                  style={{ maxWidth: "800px" }}
+                >
+                  {asientosGeneral.map((idAsiento) => {
+                    const estaOcupado = asientosOcupados.includes(idAsiento);
+                    const estaSeleccionado = asientosSeleccionados.find(
+                      (asiento) => asiento.id === idAsiento
+                    );
+
+                    return (
+                      <span
+                        key={idAsiento}
+                        className={`seat ${
+                          estaOcupado ? "occupied" : estaSeleccionado ? "selected" : "available"
+                        }`}
+                        onClick={() =>
+                          !estaOcupado && alternarAsiento(idAsiento, precioBase, "General")
+                        }
+                      >
+                        {idAsiento}
+                      </span>
+                    );
                   })}
                 </div>
               </div>
@@ -180,32 +250,38 @@ function SelectioAsiento({ show, handleClose, evento }) {
               <div className="mb-4">
                 <div className="d-flex justify-content-between mb-3">
                   <span className="text-secondary">Asientos seleccionados:</span>
-                  <span className="fw-bold text-dark">{selectedSeats.length}</span>
+                  <span className="fw-bold text-dark">{asientosSeleccionados.length}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-3 text-dark">
                   <span className="text-secondary">Recinto:</span>
-                  <span className="fw-bold">{evento.localizacion || 'Teatro Circular'}</span>
+                  <span className="fw-bold">{evento.localizacion || "Teatro Circular"}</span>
                 </div>
                 <hr />
                 <div className="d-flex justify-content-between mb-3">
                   <span className="h4 mb-0">Total:</span>
-                  <span className="h4 mb-0 fw-bold text-purple">{totalPrice.toFixed(2)}€</span>
+                  <span className="h4 mb-0 fw-bold text-purple">{precioTotal.toFixed(2)}€</span>
                 </div>
                 <div className="d-flex justify-content-between text-success smaill">
                   <span>Puntos a ganar:</span>
-                  <span className="fw-bold">{pointsToEarn} puntos</span>
+                  <span className="fw-bold">{puntosAGanar} puntos</span>
                 </div>
               </div>
               <div className="row g-2">
                 <div className="col-8">
-                    <button className="btn btn-primary-custom w-100 py-3 fw-bold rounded-pill" onClick={handleComprar}>
-                        Añadir al Carrito
-                    </button>
+                  <button
+                    className="btn btn-primary-custom w-100 py-3 fw-bold rounded-pill"
+                    onClick={handleComprar}
+                  >
+                    Añadir al Carrito
+                  </button>
                 </div>
                 <div className="col-4">
-                    <button className="btn btn-outline-secondary w-100 h-100 rounded-pill" onClick={handleClose}>
-                        Cancelar
-                    </button>
+                  <button
+                    className="btn btn-outline-secondary w-100 h-100 rounded-pill"
+                    onClick={handleClose}
+                  >
+                    Cancelar
+                  </button>
                 </div>
               </div>
             </div>

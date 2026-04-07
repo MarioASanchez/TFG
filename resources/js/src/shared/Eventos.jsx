@@ -58,7 +58,16 @@ function Eventos() {
                         </div>
                         <button 
                           className="btn btn-primary-custom btn-sm w-100 rounded-pill"
-                          onClick={() => addToCart(evento)}
+                          onClick={() =>
+                            addToCart({
+                              ...evento,
+                              // Las entradas directas desde la card se tratan como entrada general.
+                              id: `${evento.id}-general`,
+                              claveCarrito: `${evento.id}-general`,
+                              idEvento: evento.id,
+                              tipoEntrada: "General"
+                            })
+                          }
                         >
                           Añadir al Carrito
                         </button>

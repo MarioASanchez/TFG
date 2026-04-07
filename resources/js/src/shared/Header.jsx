@@ -46,7 +46,6 @@ function Header() {
             <ul className="navbar-nav ms-auto align-items-center">
 
               {/* 1. CARRITO: Solo si el usuario NO es admin (opcional, tú decides) */}
-              {(!usuarios || !usuarios.admin) && <CartButton />}
 
               {/* 2. USUARIO NO LOGUEADO */}
               {!usuarios && (
@@ -63,7 +62,7 @@ function Header() {
               {/* 3. USUARIO LOGUEADO (Cualquier rol) */}
               {usuarios && (
                 <>
-                <CartButton />
+                  <CartButton />
                   <li className="nav-item">
                     <Link to="/" className="nav-link fw-bold">Inicio</Link>
                   </li>
