@@ -78,7 +78,32 @@ class EntradaController
     }
 
 
-    public function getEtiquetas(){
+    public function getEtiquetas()
+    {
         return response()->json(Etiqueta::all(), 200);
+    }
+
+    // Recomendaciones
+    public function recomendadosPersonalizados(Request $request)
+    {
+        // Buscamos 'etiquetas', que es lo que envías desde React
+        $idsEtiquetas = $request->input('etiquetas', []);
+
+        // 2. Si no hay preferencias, fallback aleatorio
+        if (empty($idsEtiquetas)) {
+            return response()->json(Evento::with('tags')->inRandomOrder()->limit(4)->get());
+        }
+
+        // 3. Filtrado real
+        $eventos = Evento::with('tags')
+            ->whereHas('tags', function ($query) use ($idsEtiquetas) {
+                // Importante: Asegúrate que 'etiquetas.id' es el nombre real de tu tabla/columna
+                $query->whereIn('etiquetas.id', $idsEtiquetas);
+            })
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
+        return response()->json($eventos);
     }
 }

@@ -10,3 +10,5 @@ Route::post('/upload', [FileUploadController::class, 'store']);
 Route::post('/addEvento', [EntradaController::class, 'addEvento']);
 // Recuperar las etiquetas
 Route::get('/etiquetas', [EntradaController::class, 'getEtiquetas']);
+// Gestión de recomendados
+Route::post('/recomendados', [EntradaController::class, 'recomendadosPersonalizados']);

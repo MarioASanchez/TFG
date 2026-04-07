@@ -52,6 +52,9 @@ function Header() {
               {!usuarios && (
                 <>
                   <li className="nav-item">
+                    <Link to="/eventos" className="nav-link fw-bold">Eventos</Link>
+                  </li>
+                  <li className="nav-item">
                     <Link to="/login" className="nav-link fw-bold">Iniciar Sesión</Link>
                   </li>
                   <li className="nav-item">

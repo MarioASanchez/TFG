@@ -9,6 +9,7 @@ import Header from "../shared/Header";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Footer from "../shared/Footer";
+import { mostrarError, mostrarExito } from "../shared/Helpers/Notificaciones";
 
 
 function Login() {
@@ -27,9 +28,10 @@ function Login() {
         const resultado = await login(obj);
 
         if(resultado.success) {
+          mostrarExito("Sesión iniciada con éxito");
             navigate("/")
         }else{
-          alert("Usuario o contraseña incorrectos")
+          mostrarError("Correo o contraseña incorrectos");
         }
     }      
 

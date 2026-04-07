@@ -15,8 +15,9 @@ function Perfil() {
   let { usuarios, eliminarCuenta, cambiarDatos, guardarPreferencias } = useContext(UsuarioHelperContext)
   const [etiquetas, setEtiquetas] = useState([]);
   const [seleccionadas, setSeleccionadas] = useState([]);
+  const [recomendados, setRecomendados] = useState([]);
   const URL_LARAVEL = import.meta.env.VITE_API_EVENTS_URL;
-
+  const URL_SPRING = import.meta.env.VITE_API_USERS_URL;
 
   function procesa(ev) {
     ev.preventDefault();
@@ -26,20 +27,60 @@ function Perfil() {
       nuevoApellido: ev.target.nuevoApellido.value,
       nuevoUsername: ev.target.nuevoUsername.value
     }
-    
+
     cambiarDatos(datosNuevos)
 
   }
 
   // MANEJO DE LAS ETIQUETAS
   useEffect(() => {
-    const cargarTags = async () => {
-      const res = await fetch(`${URL_LARAVEL}/etiquetas`);
-      const data = await res.json();
-      setEtiquetas(data);
+    const cargarDatosIniciales = async () => {
+      if (!usuarios?.id) return;
+
+      try {
+        // 1. Cargamos etiquetas globales (Laravel)
+        const resLaravel = await fetch(`${URL_LARAVEL}/etiquetas`);
+        const tagsTotales = await resLaravel.json();
+        setEtiquetas(tagsTotales);
+
+        // 2. Cargamos preferencias (Spring Boot)
+        const resSpring = await fetch(`${URL_SPRING}/preferencias/${usuarios.id}`);
+
+        // CREAMOS UNA VARIABLE LOCAL para guardar los IDs y poder usarlos ahora mismo
+        let idsParaRecomendaciones = [];
+
+        if (resSpring.ok) {
+          const dataUsuario = await resSpring.json();
+          // Extraemos los IDs de la respuesta de Spring
+          idsParaRecomendaciones = dataUsuario.idsEtiquetas || [];
+          // Actualizamos el estado para los checkboxes
+          setSeleccionadas(idsParaRecomendaciones);
+        }
+
+        console.log("Enviando estas etiquetas a Laravel:", idsParaRecomendaciones);
+        // 3. Recomendaciones (Laravel)
+        const resEventos = await fetch(`${URL_LARAVEL}/recomendados`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          // Enviamos la variable que acabamos de definir arriba
+          body: JSON.stringify({ etiquetas: idsParaRecomendaciones })
+        });
+
+        if (resEventos.ok) {
+          const eventosData = await resEventos.json();
+          setRecomendados(eventosData);
+        }
+
+      } catch (error) {
+        console.error("Error al cargar la configuración del perfil:", error);
+      }
     };
-    cargarTags();
-  }, []);
+
+    cargarDatosIniciales();
+  }, [usuarios?.id]);
 
 
   // 1. Función para añadir o quitar IDs del array
@@ -51,7 +92,7 @@ function Perfil() {
     );
   };
 
-  // 2. Función para disparar el guardado de las etiquetas
+  // 2. Función para el guardado de las etiquetas
   const enviarPreferencias = async () => {
     try {
       // Llamamos a la función del Helper 
@@ -335,176 +376,58 @@ function Perfil() {
             </div>
           </div>
 
-          {/* <!-- Recommended Tab --> */}
+          {/*Sección de recomendados*/}
           <div className="tab-pane fade" id="tabRecommended">
-            <div className="card-custom p-4 mb-4">
-              <h4 className="mb-3">
-                <i className="bi bi-graph-up-arrow me-2"></i>Eventos Recomendados
-                Para Ti
-              </h4>
-              <p className="text-muted mb-4">
-                Basándonos en tus compras anteriores y preferencias
-              </p>
-              <div className="row g-4">
-                <div className="col-md-4">
-                  <div className="card-custom">
-                    <img
-                      src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=400"
-                      className="card-img-small"
-                      alt="Festival"
-                    />
-                    <div className="p-3">
-                      <span className="badge bg-success mb-2">95% Compatible</span>
-                      <h6 className="fw-bold mb-2">Warm Up Music Festival</h6>
-                      <p className="small text-muted mb-3">
-                        <i className="bi bi-geo-alt me-1"></i>Recinto Ferial
-                        <br />
-                        <i className="bi bi-calendar me-1"></i>28 Dic 2024
-                      </p>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span
-                          className="fw-bold"
-                          style={{ color: "var(--primary-color)" }}
-                        >
-                          55€
-                        </span>
-                        <button className="btn btn-primary-custom btn-sm">
-                          Ver más
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <section className="py-4">
+              <div className="container p-0">
+                <h2 className="display-6 fw-bold mb-4">
+                 Recomendados para ti
+                </h2>
+                <p className="text-muted mb-4">Planes personalizados según tus intereses.</p>
 
-                <div className="col-md-4">
-                  <div className="card-custom">
-                    <img
-                      src="https://images.unsplash.com/photo-1690013429722-87852aae164b?w=400"
-                      className="card-img-small"
-                      alt="Concierto"
-                    />
-                    <div className="p-3">
-                      <span className="badge bg-success mb-2">88% Compatible</span>
-                      <h6 className="fw-bold mb-2">Concierto Sinfónico</h6>
-                      <p className="small text-muted mb-3">
-                        <i className="bi bi-geo-alt me-1"></i>Auditorio El Batel
-                        <br />
-                        <i className="bi bi-calendar me-1"></i>10 Ene 2025
-                      </p>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span
-                          className="fw-bold"
-                          style={{ color: "var(--primary-color)" }}
-                        >
-                          40€
-                        </span>
-                        <button className="btn btn-primary-custom btn-sm">
-                          Ver más
-                        </button>
-                      </div>
-                    </div>
+                {recomendados.length === 0 ? (
+                  <div className="card-custom p-5 text-center">
+                    <div className="spinner-border text-success mb-3" role="status"></div>
+                    <p className="text-muted mb-0">Buscando los mejores eventos para ti...</p>
                   </div>
-                </div>
-
-                <div className="col-md-4">
-                  <div className="card-custom">
-                    <img
-                      src="https://images.unsplash.com/photo-1762028895876-52b2318d8e75?w=400"
-                      className="card-img-small"
-                      alt="Comedia"
-                    />
-                    <div className="p-3">
-                      <span className="badge bg-success mb-2">82% Compatible</span>
-                      <h6 className="fw-bold mb-2">Stand Up Comedy Night</h6>
-                      <p className="small text-muted mb-3">
-                        <i className="bi bi-geo-alt me-1"></i>Sala REM
-                        <br />
-                        <i className="bi bi-calendar me-1"></i>5 Ene 2025
-                      </p>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span
-                          className="fw-bold"
-                          style={{ color: "var(--primary-color)" }}
+                ) : (
+                  <div className="row g-4">
+                    {recomendados.map((elemento, indice) => (
+                      <div className="col-lg-3 col-md-4 col-sm-6" key={elemento.id || indice}>
+                        <div
+                          className="card-custom h-100 d-flex flex-column p-0 overflow-hidden shadow-sm"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => window.location.href = `/evento/${elemento.id}`}
                         >
-                          25€
-                        </span>
-                        <button className="btn btn-primary-custom btn-sm">
-                          Ver más
-                        </button>
+                          <img
+                            src={elemento.imagen?.startsWith('http') ? elemento.imagen : `${URL_LARAVEL}/../storage/${elemento.imagen}`}
+                            className="w-100 card-img-small"
+                            alt={elemento.titulo}
+                            style={{ height: '160px', objectFit: 'cover' }}
+                          />
+                          <div className="p-3 flex-grow-1 d-flex flex-column">
+                            <h3 className="h6 fw-bold mb-2">
+                              {elemento.nombre}
+                            </h3>
+                            <p className="small text-muted mb-3 mt-auto">
+                              Aforo: {elemento.aforo || 'Consultar'} • {elemento.localizacion || 'Murcia'}
+                            </p>
+                            <div className="d-flex justify-content-between align-items-center">
+                              <span className="fw-bold text-purple" style={{ color: "var(--primary-color)" }}>
+                                {elemento.fecha_inicio || elemento.fecha || 'Próximamente'}
+                              </span>
+                              <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1" style={{ fontSize: '0.7rem' }}>
+                                Disponible
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                </div>
+                )}
               </div>
-            </div>
-          </div>
-
-          {/* <!-- Favorites Tab --> */}
-          <div className="tab-pane fade" id="tabFavorites">
-            <div className="card-custom p-4">
-              <h4 className="mb-4">
-                <i className="bi bi-heart-fill me-2"></i>Eventos Guardados
-              </h4>
-              <div className="row g-4">
-                <div className="col-md-6">
-                  <div className="card-custom p-4">
-                    <div className="d-flex justify-content-between align-items-start mb-3">
-                      <div>
-                        <h5 className="mb-1">Festival de Jazz</h5>
-                        <p className="text-muted small mb-0">
-                          <i className="bi bi-geo-alt me-1"></i>Teatro Circo
-                          <br />
-                          <i className="bi bi-calendar me-1"></i>20 Ene 2025
-                        </p>
-                      </div>
-                      <button className="btn btn-sm btn-outline-danger">
-                        <i className="bi bi-heart-fill"></i>
-                      </button>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span
-                        className="fw-bold fs-5"
-                        style={{ color: "var(--primary-color)" }}
-                      >
-                        35€
-                      </span>
-                      <button className="btn btn-primary-custom btn-sm">
-                        Comprar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="card-custom p-4">
-                    <div className="d-flex justify-content-between align-items-start mb-3">
-                      <div>
-                        <h5 className="mb-1">Obra de Teatro: Hamlet</h5>
-                        <p className="text-muted small mb-0">
-                          <i className="bi bi-geo-alt me-1"></i>Teatro Romea
-                          <br />
-                          <i className="bi bi-calendar me-1"></i>15 Ene 2025
-                        </p>
-                      </div>
-                      <button className="btn btn-sm btn-outline-danger">
-                        <i className="bi bi-heart-fill"></i>
-                      </button>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span
-                        className="fw-bold fs-5"
-                        style={{ color: "var(--primary-color)" }}
-                      >
-                        30€
-                      </span>
-                      <button className="btn btn-primary-custom btn-sm">
-                        Comprar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </section>
           </div>
 
           {/* <!-- Coupons Tab --> */}
@@ -719,7 +642,7 @@ function Perfil() {
                   <div key={tag.id} className="col-6 col-md-4 col-lg-3 mb-3">
                     <div className="form-check custom-checkbox-card p-2 border rounded text-center">
                       <input
-                        className="form-check-input d-none" 
+                        className="form-check-input d-none"
                         type="checkbox"
                         id={`tag-${tag.id}`}
                         checked={seleccionadas.includes(tag.id)}

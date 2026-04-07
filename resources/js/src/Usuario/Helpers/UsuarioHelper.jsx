@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { mostrarError, mostrarExito } from "../../shared/Helpers/Notificaciones";
+import { mostrarError, mostrarExito, mostrarAdios } from "../../shared/Helpers/Notificaciones";
 
 
 export const UsuarioHelperContext = createContext();
@@ -69,10 +69,10 @@ export const UsuarioHelperProvider = ({ children }) => {
                     puntosAcumulados: 0
                 }),
             });
-
+            mostrarExito(`Has creado un nuevo usuario ${obj.nombre}`)
             navigate("/login");
         } catch (error) {
-            console.error("Error al registrar", error);
+            mostrarError("Error al intentar registrarte, prueba otra vez")
             return { success: false, error: error.message };
         }
     };
@@ -82,7 +82,7 @@ export const UsuarioHelperProvider = ({ children }) => {
         setToken(null);
         localStorage.removeItem("token");
         localStorage.removeItem("usuario");
-        alert("Has cerrado sesión. ¡Nos vemos pronto!")
+        mostrarAdios();
         navigate("/")
     };
 
@@ -98,8 +98,8 @@ export const UsuarioHelperProvider = ({ children }) => {
 
                 })
             });
-
-            if (!response.ok) throw new Error("Error al modificar tus datos")
+            
+            mostrarExito("Datos cambiados con éxito")
 
         } catch (error) {
             mostrarError("Ese nombre de usuario ya está escogido...")
@@ -118,9 +118,9 @@ export const UsuarioHelperProvider = ({ children }) => {
 
             if (response.ok) {
                 logout();
-                alert("Has borrado tu cuenta");
+                mostrarAdios();
             } else if (response.status === 401) {
-                alert("Tu sesión ha caducado por seguridad. Vuelve a iniciar sesión.");
+                mostrarError("Tu sesión ha caducado. Prueba otra vez");
                 logout();
             } else {
                 console.error("No se ha podido borrar");

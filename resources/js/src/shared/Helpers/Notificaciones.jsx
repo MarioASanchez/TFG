@@ -24,3 +24,23 @@ export const mostrarError = (mensaje) => {
     confirmButtonColor: '#d33',
   });
 };
+
+export const mostrarAdios = () => {
+  return MySwal.fire({
+    title: '¡Hasta pronto!',
+    text: 'Has cerrado sesión. ¡Nos vemos pronto!',
+    icon: 'info',
+    timer: 2000,
+    showConfirmButton: false
+  });
+};
+
+export const eliminarCuenta = () => {
+  return MySwal.fire({
+    title: 'Nos entristece ver esto...',
+    text: 'Has eliminado tu cuenta en Eventium. ¡Esperamos que vuelvas pronto!',
+    icon: 'info',
+    timer: 2000,
+    showConfirmButton: false
+  });
+};

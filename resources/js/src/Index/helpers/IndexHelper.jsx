@@ -16,7 +16,6 @@ export const IndexHelperProvider = ({ children }) => {
       const response = await fetch(`${URL_LARAVEL}/eventos`);
       const data = await response.json();
       setEventos(data);
-      console.log(data)
     } catch (error) {
       console.error("Error al cargar eventos:", error);
     }
