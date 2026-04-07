@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { CarritoContext } from "./Helpers/CarritoHelper";
 
-function SelectioAsiento({ show, handleClose, evento }) {
+function SelectioAsiento({ show, handleClose, evento, alConfirmarCompra }) {
   const { addToCart } = useContext(CarritoContext);
   const [asientosSeleccionados, setAsientosSeleccionados] = React.useState([]);
   const [asientosOcupados, setAsientosOcupados] = React.useState([]);
@@ -75,6 +75,10 @@ function SelectioAsiento({ show, handleClose, evento }) {
     Object.values(entradasPorTipo).forEach((entrada) => addToCart(entrada));
     setAsientosSeleccionados([]);
     handleClose();
+
+    if (alConfirmarCompra) {
+      alConfirmarCompra();
+    }
   };
 
   const aforo = evento.aforo || 30;

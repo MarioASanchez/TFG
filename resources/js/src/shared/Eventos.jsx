@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../Index/styles.css";
 import Footer from "./Footer";
 import Header from "./Header";
-import { CarritoContext } from "./Helpers/CarritoHelper";
 import DetalleEventoModal from "./DetalleEventoModal";
 
 function obtenerImagenEvento(evento) {
@@ -22,7 +21,6 @@ function formatearFecha(fecha) {
 }
 
 function Eventos() {
-  const { addToCart } = useContext(CarritoContext);
   const [listaEventos, setListaEventos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [eventoSeleccionado, setEventoSeleccionado] = useState(null);
@@ -46,20 +44,6 @@ function Eventos() {
 
   const cerrarModalEvento = () => {
     setEventoSeleccionado(null);
-  };
-
-  const anadirEntradaGeneral = (evento) => {
-    if (Number(evento.stock) <= 0) {
-      return;
-    }
-
-    addToCart({
-      ...evento,
-      id: `${evento.id}-general`,
-      claveCarrito: `${evento.id}-general`,
-      idEvento: evento.id,
-      tipoEntrada: "General"
-    });
   };
 
   return (
@@ -126,22 +110,13 @@ function Eventos() {
                           </span>
                         </div>
 
-                        <div className="d-grid gap-2">
-                          <button
-                            type="button"
-                            className="btn btn-outline-secondary btn-sm w-100 rounded-pill"
-                            onClick={() => abrirModalEvento(evento)}
-                          >
-                            Ver detalles
-                          </button>
-                          <button
-                            className="btn btn-primary-custom btn-sm w-100 rounded-pill"
-                            onClick={() => anadirEntradaGeneral(evento)}
-                            disabled={Number(evento.stock) <= 0}
-                          >
-                            {Number(evento.stock) > 0 ? "Anadir al carrito" : "Sin stock"}
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary btn-sm w-100 rounded-pill"
+                          onClick={() => abrirModalEvento(evento)}
+                        >
+                          Ver detalles
+                        </button>
                       </div>
                     </div>
                   </div>
