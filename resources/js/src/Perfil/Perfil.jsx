@@ -4,10 +4,10 @@ import "./perfil.css";
 
 import Footer from "../shared/Footer";
 import Header from "../shared/Header";
-
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
 import { Link } from "react-router-dom";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 import { mostrarExito, mostrarError } from "../shared/Helpers/Notificaciones";
 import { IndexHelperContext } from "../Index/helpers/IndexHelper";
@@ -70,8 +70,6 @@ function Perfil() {
       setRecomendados(dataRecom);
       setHistorial(dataHistorial);
 
-      console.log("Datos actualizados automáticamente");
-
     } catch (error) {
       console.error("Error cargando perfil:", error);
     } finally {
@@ -102,7 +100,7 @@ function Perfil() {
           nombreEvento: infoEvento?.nombre || "Evento sin nombre",
           localizacion: infoEvento?.localizacion || "N/A",
           fechaEvento: infoEvento?.fechaInicio || item.fechaCompra,
-          fechaFin: infoEvento?.fechaFin ||item.fechaCompra,
+          fechaFin: infoEvento?.fechaFin || item.fechaCompra,
           asientos: Array.isArray(asientosLimpios) ? asientosLimpios : [asientosLimpios],
           precioTotal: parseFloat(item.precio || 0),
         };
@@ -130,26 +128,16 @@ function Perfil() {
     });
   }, [historialAgrupado]);
 
+  // Calcular el total gastado de cada usuario
+  const totalGastado = useMemo(() => {
+    return historialAgrupado.reduce((total, compra) => total + compra.precioTotal, 0);
+  }, [historialAgrupado]);
+
+
   useEffect(() => {
     // Carga inicial al montar el componente
     cargarTodo();
 
-    // EFECTO TIEMPO REAL: 
-    // Cada vez que el usuario vuelve a esta pestaña (después de comprar, por ejemplo)
-    const refrescarAlVolver = () => {
-      console.log("Detectado foco en la ventana, actualizando historial...");
-      cargarTodo();
-    };
-
-    window.addEventListener('focus', refrescarAlVolver);
-
-    // Opcional: Polling cada 15 segundos si el usuario se queda quieto en la pantalla
-    const interval = setInterval(cargarTodo, 15000);
-
-    return () => {
-      window.removeEventListener('focus', refrescarAlVolver);
-      clearInterval(interval);
-    };
   }, [cargarTodo]);
 
   // Función para añadir o quitar IDs del array
@@ -170,6 +158,13 @@ function Perfil() {
     } catch (error) {
       mostrarError("Error al guardar");
     }
+  };
+
+  const getFechaLocal = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
 
@@ -285,75 +280,50 @@ function Perfil() {
           <div className="tab-pane fade show active" id="tabCalendar">
             <div className="row g-4">
               <div className="col-lg-6">
-                <div className="card-custom p-4">
-                  <h4 className="mb-4">
-                    <i className="bi bi-calendar3 me-2"></i>Calendario de Eventos
-                  </h4>
-                  <div className="calendar">
-                    <div className="calendar-header">
-                      <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick="previousMonth()"
-                      >
-                        <i className="bi bi-chevron-left"></i>
-                      </button>
-                      <h5 className="mb-0" id="calendarMonth">
-                        Diciembre 2024
-                      </h5>
-                      <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick="nextMonth()"
-                      >
-                        <i className="bi bi-chevron-right"></i>
-                      </button>
-                    </div>
-                    <div className="calendar-grid">
-                      <div className="calendar-day-header">L</div>
-                      <div className="calendar-day-header">M</div>
-                      <div className="calendar-day-header">X</div>
-                      <div className="calendar-day-header">J</div>
-                      <div className="calendar-day-header">V</div>
-                      <div className="calendar-day-header">S</div>
-                      <div className="calendar-day-header">D</div>
-                      <div className="calendar-day other-month">25</div>
-                      <div className="calendar-day other-month">26</div>
-                      <div className="calendar-day other-month">27</div>
-                      <div className="calendar-day other-month">28</div>
-                      <div className="calendar-day other-month">29</div>
-                      <div className="calendar-day other-month">30</div>
-                      <div className="calendar-day">1</div>
-                      <div className="calendar-day">2</div>
-                      <div className="calendar-day">3</div>
-                      <div className="calendar-day">4</div>
-                      <div className="calendar-day">5</div>
-                      <div className="calendar-day">6</div>
-                      <div className="calendar-day">7</div>
-                      <div className="calendar-day">8</div>
-                      <div className="calendar-day">9</div>
-                      <div className="calendar-day">10</div>
-                      <div className="calendar-day">11</div>
-                      <div className="calendar-day">12</div>
-                      <div className="calendar-day">13</div>
-                      <div className="calendar-day">14</div>
-                      <div className="calendar-day has-event">15</div>
-                      <div className="calendar-day">16</div>
-                      <div className="calendar-day">17</div>
-                      <div className="calendar-day">18</div>
-                      <div className="calendar-day">19</div>
-                      <div className="calendar-day has-event">20</div>
-                      <div className="calendar-day">21</div>
-                      <div className="calendar-day">22</div>
-                      <div className="calendar-day">23</div>
-                      <div className="calendar-day">24</div>
-                      <div className="calendar-day">25</div>
-                      <div className="calendar-day">26</div>
-                      <div className="calendar-day">27</div>
-                      <div className="calendar-day has-event">28</div>
-                      <div className="calendar-day">29</div>
-                      <div className="calendar-day">30</div>
-                      <div className="calendar-day has-event">31</div>
-                    </div>
-                  </div>
+                <h4 className="mb-4 text-dark">
+                  <i className="bi bi-calendar3 me-2"></i>Calendario de Eventos
+                </h4>
+                <div className="card-custom p-4 h-100">
+                  <Calendar
+                    tileClassName={({ date, view }) => {
+                      if (view === 'month') {
+                        const fechaCelda = getFechaLocal(date);
+                        const tieneEvento = eventosFuturos.some(evento => {
+                          const inicio = getFechaLocal(new Date(evento.fechaEvento));
+                          const fin = getFechaLocal(new Date(evento.fechaFin));
+                          return fechaCelda >= inicio && fechaCelda <= fin;
+                        });
+                        return tieneEvento ? 'dia-con-evento' : null;
+                      }
+                    }}
+                    tileContent={({ date, view }) => {
+                      if (view === 'month') {
+                        const fechaCelda = getFechaLocal(date);
+
+                        // Filtramos todos los eventos que caen en este día
+                        const eventosDeHoy = eventosFuturos.filter(evento => {
+                          const inicio = getFechaLocal(new Date(evento.fechaEvento));
+                          const fin = getFechaLocal(new Date(evento.fechaFin));
+                          return fechaCelda >= inicio && fechaCelda <= fin;
+                        });
+
+                        if (eventosDeHoy.length > 0) {
+                          // Extraemos los nombres y los unimos con una coma
+                          const nombres = eventosDeHoy.map(e => e.nombreEvento).join(', ');
+
+                          return (
+                            <div className="hover-event-container" data-evento={nombres}>
+                              <div className="dot-indicador"></div>
+                            </div>
+                          );
+                        }
+                      }
+                      return null;
+                    }}
+                    formatShortWeekday={(locale, date) =>
+                      ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][date.getDay()]
+                    }
+                  />
                 </div>
               </div>
               <div className="col-lg-6">
@@ -576,21 +546,21 @@ function Perfil() {
                     className="bi bi-credit-card fs-1 mb-2"
                     style={{ color: "var(--primary-color)" }}
                   ></i>
-                  <h3 className="mb-0">125€</h3>
+                  <h3 className="mb-0">{totalGastado.toFixed(2)}€</h3>
                   <p className="text-muted mb-0">Total gastado</p>
                 </div>
               </div>
               <div className="col-md-4">
                 <div className="card-custom p-4 text-center">
                   <i className="bi bi-star-fill fs-1 text-warning mb-2"></i>
-                  <h3 className="mb-0">150</h3>
+                  <h3 className="mb-0">{usuarios.puntosAcumulados}</h3>
                   <p className="text-muted mb-0">Puntos ganados</p>
                 </div>
               </div>
               <div className="col-md-4">
                 <div className="card-custom p-4 text-center">
                   <i className="bi bi-ticket-perforated fs-1 text-info mb-2"></i>
-                  <h3 className="mb-0">3</h3>
+                  <h3 className="mb-0">{historialAgrupado.length}</h3>
                   <p className="text-muted mb-0">Eventos comprados</p>
                 </div>
               </div>

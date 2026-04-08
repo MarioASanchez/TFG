@@ -1,393 +1,586 @@
- :root {
-            --primary-color: #7c3aed;
-            --primary-dark: #6d28d9;
-            --primary-light: #a78bfa;
-            --secondary-color: #ec4899;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            --info-color: #06b6d4;
-            
-            /* Light Mode Variables */
-            --bg-primary: #ffffff;
-            --bg-secondary: #f9fafb;
-            --bg-gradient: linear-gradient(135deg, #f9fafb 0%, #f3e8ff 100%);
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --text-muted: #9ca3af;
-            --border-color: #e5e7eb;
-            --card-bg: #ffffff;
-            --card-shadow: rgba(0, 0, 0, 0.1);
-        }
+:root {
+    --primary-color: #7c3aed;
+    --primary-dark: #6d28d9;
+    --primary-light: #a78bfa;
+    --secondary-color: #ec4899;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --info-color: #06b6d4;
 
-        body.dark-mode {
-            /* Dark Mode Variables */
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --card-bg: #1e293b;
-            --card-shadow: rgba(0, 0, 0, 0.3);
-        }
+    /* Light Mode Variables */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-gradient: linear-gradient(135deg, #f9fafb 0%, #f3e8ff 100%);
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --border-color: #e5e7eb;
+    --card-bg: #ffffff;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+body.dark-mode {
+    /* Dark Mode Variables */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --card-bg: #1e293b;
+    --card-shadow: rgba(0, 0, 0, 0.3);
+}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-primary);
-            transition: background 0.3s ease, color 0.3s ease;
-            min-height: 100vh;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        /* Smooth transitions for dark mode */
-        *:not(.btn):not(.card-custom) {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
+body {
+    font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-primary);
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
+    min-height: 100vh;
+}
 
-        /* Header Styles */
-        .navbar-custom {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
-        }
+/* Smooth transitions for dark mode */
+*:not(.btn):not(.card-custom) {
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
 
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: white !important;
-        }
+/* Header Styles */
+.navbar-custom {
+    background: linear-gradient(
+        135deg,
+        var(--primary-color) 0%,
+        var(--primary-dark) 100%
+    );
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+}
 
-        .points-badge {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-weight: 600;
-        }
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: white !important;
+}
 
-        #darkModeToggleBtn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            transition: all 0.3s ease;
-        }
-        
-        #darkModeToggleBtn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
+.points-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+}
 
-        /* Card Styles */
-        .card-custom {
-            background: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            max-height: fit-content;
-        }
+#darkModeToggleBtn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    transition: all 0.3s ease;
+}
 
-        .card-custom:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px var(--card-shadow);
-        }
+#darkModeToggleBtn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
 
-        .card-img-small {
-            height: 200px;
-            object-fit: cover;
-            width: 100%;
-        }
+/* Card Styles */
+.card-custom {
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    max-height: fit-content;
+}
 
-        /* Button Styles */
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
+.card-custom:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px var(--card-shadow);
+}
 
-        .btn-primary-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
-            color: white;
-        }
+.card-img-small {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
 
-        /* Profile Header */
-        .profile-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            padding: 2rem;
-            color: white;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-        }
+/* Button Styles */
+.btn-primary-custom {
+    background: linear-gradient(
+        135deg,
+        var(--primary-color) 0%,
+        var(--primary-dark) 100%
+    );
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
 
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            margin: 0 auto 1rem;
-        }
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+    color: white;
+}
 
-        body.dark-mode .profile-avatar {
-            background: rgba(255, 255, 255, 0.15);
-        }
+/* Profile Header */
+.profile-header {
+    background: linear-gradient(
+        135deg,
+        var(--primary-color) 0%,
+        var(--primary-dark) 100%
+    );
+    padding: 2rem;
+    color: white;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+}
 
-        /* Tabs */
-        .nav-pills .nav-link {
-            color: var(--text-secondary);
-            border-radius: 8px;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 1rem;
+}
 
-        .nav-pills .nav-link.active {
-            background: var(--primary-color);
-            color: white;
-        }
+body.dark-mode .profile-avatar {
+    background: rgba(255, 255, 255, 0.15);
+}
 
-        .nav-pills .nav-link:hover:not(.active) {
-            background: var(--bg-secondary);
-        }
+/* Tabs */
+.nav-pills .nav-link {
+    color: var(--text-secondary);
+    border-radius: 8px;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
 
-        /* Calendar Styles */
-        .calendar {
-            background: var(--card-bg);
-            padding: 1rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
+.nav-pills .nav-link.active {
+    background: var(--primary-color);
+    color: white;
+}
 
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
-        }
+.nav-pills .nav-link:hover:not(.active) {
+    background: var(--bg-secondary);
+}
 
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0.5rem;
-        }
+/* Calendar Styles */
+.calendar {
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
 
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
 
-        .calendar-day:hover {
-            background: var(--bg-secondary);
-        }
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+}
 
-        .calendar-day.has-event {
-            background: var(--primary-color);
-            color: white;
-            font-weight: bold;
-        }
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
 
-        .calendar-day.selected {
-            border: 2px solid var(--primary-color);
-        }
+.calendar-day:hover {
+    background: var(--bg-secondary);
+}
 
-        .calendar-day.other-month {
-            color: var(--text-muted);
-        }
+.calendar-day.has-event {
+    background: var(--primary-color);
+    color: white;
+    font-weight: bold;
+}
 
-        .calendar-day-header {
-            font-weight: 600;
-            color: var(--text-secondary);
-            padding: 0.5rem;
-            text-align: center;
-            font-size: 0.85rem;
-        }
+.calendar-day.selected {
+    border: 2px solid var(--primary-color);
+}
 
-        /* Coupon Card */
-        .coupon-card {
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 2px dashed var(--primary-color);
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(167, 139, 250, 0.05) 100%);
-            position: relative;
-        }
+.calendar-day.other-month {
+    color: var(--text-muted);
+}
 
-        .coupon-card.used {
-            opacity: 0.5;
-            border-color: var(--text-muted);
-            background: var(--bg-secondary);
-        }
+.calendar-day-header {
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+}
 
-        /* Points Card */
-        .points-card {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%);
-            border: 2px solid rgba(124, 58, 237, 0.2);
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-        }
+/* Coupon Card */
+.coupon-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px dashed var(--primary-color);
+    background: linear-gradient(
+        135deg,
+        rgba(124, 58, 237, 0.05) 0%,
+        rgba(167, 139, 250, 0.05) 100%
+    );
+    position: relative;
+}
 
-        body.dark-mode .points-card {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(167, 139, 250, 0.2) 100%);
-            border-color: rgba(124, 58, 237, 0.4);
-        }
+.coupon-card.used {
+    opacity: 0.5;
+    border-color: var(--text-muted);
+    background: var(--bg-secondary);
+}
 
-        /* Toast Notifications */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
+/* Points Card */
+.points-card {
+    background: linear-gradient(
+        135deg,
+        rgba(124, 58, 237, 0.1) 0%,
+        rgba(167, 139, 250, 0.1) 100%
+    );
+    border: 2px solid rgba(124, 58, 237, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+}
 
-        .toast-custom {
-            background: var(--card-bg);
-            color: var(--text-primary);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            box-shadow: 0 10px 40px var(--card-shadow);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            animation: slideIn 0.3s ease;
-        }
+body.dark-mode .points-card {
+    background: linear-gradient(
+        135deg,
+        rgba(124, 58, 237, 0.2) 0%,
+        rgba(167, 139, 250, 0.2) 100%
+    );
+    border-color: rgba(124, 58, 237, 0.4);
+}
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
 
-        .toast-success { border-left: 4px solid var(--success-color); }
-        .toast-error { border-left: 4px solid var(--danger-color); }
-        .toast-info { border-left: 4px solid var(--info-color); }
+.toast-custom {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 10px 40px var(--card-shadow);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: slideIn 0.3s ease;
+}
 
-        /* Dark Mode Adjustments */
-        body.dark-mode .form-control,
-        body.dark-mode .form-select {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border-color: var(--border-color);
-        }
-        
-        body.dark-mode .form-control:focus,
-        body.dark-mode .form-select:focus {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border-color: var(--primary-color);
-        }
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
 
-        body.dark-mode .form-check-input {
-            background-color: var(--bg-secondary);
-            border-color: var(--border-color);
-        }
-        
-        body.dark-mode .form-check-input:checked {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
+.toast-success {
+    border-left: 4px solid var(--success-color);
+}
+.toast-error {
+    border-left: 4px solid var(--danger-color);
+}
+.toast-info {
+    border-left: 4px solid var(--info-color);
+}
 
-        body.dark-mode .text-muted {
-            color: var(--text-muted) !important;
-        }
+/* Dark Mode Adjustments */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
 
-        body.dark-mode hr {
-            border-color: var(--border-color);
-            opacity: 0.3;
-        }
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--primary-color);
+}
 
-        body.dark-mode .border {
-            border-color: var(--border-color) !important;
-        }
+body.dark-mode .form-check-input {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+}
 
-        body.dark-mode .progress {
-            background: var(--bg-secondary);
-        }
+body.dark-mode .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
 
-        body.dark-mode .badge-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
+body.dark-mode .text-muted {
+    color: var(--text-muted) !important;
+}
 
-        body.dark-mode .dropdown-menu {
-            background: var(--card-bg);
-            border-color: var(--border-color);
-        }
-        
-        body.dark-mode .dropdown-item {
-            color: var(--text-primary);
-        }
-        
-        body.dark-mode .dropdown-item:hover {
-            background: var(--bg-secondary);
-        }
+body.dark-mode hr {
+    border-color: var(--border-color);
+    opacity: 0.3;
+}
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .profile-header {
-                padding: 1.5rem;
-            }
+body.dark-mode .border {
+    border-color: var(--border-color) !important;
+}
 
-            .profile-avatar {
-                width: 80px;
-                height: 80px;
-                font-size: 2rem;
-            }
+body.dark-mode .progress {
+    background: var(--bg-secondary);
+}
 
-            .calendar-day {
-                font-size: 0.75rem;
-            }
+body.dark-mode .badge-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
 
-            .nav-pills {
-                display: flex;
-                overflow-x: auto;
-                flex-wrap: nowrap;
-                padding-bottom: 0.5rem;
-            }
+body.dark-mode .dropdown-menu {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
 
-            .nav-pills .nav-link {
-                white-space: nowrap;
-            }
-        }
-        
+body.dark-mode .dropdown-item {
+    color: var(--text-primary);
+}
+
+body.dark-mode .dropdown-item:hover {
+    background: var(--bg-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-header {
+        padding: 1.5rem;
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+
+    .nav-pills {
+        display: flex;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.5rem;
+    }
+
+    .nav-pills .nav-link {
+        white-space: nowrap;
+    }
+}
+
+
+
 .cursor-pointer {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .custom-checkbox-card:hover {
-  background-color: #f8f9fa;
-  border-color: var(--bs-primary) !important;
+    background-color: #f8f9fa;
+    border-color: var(--bs-primary) !important;
 }
 
 /* Si la etiqueta está seleccionada, le damos un fondo suave */
 input:checked + label {
-  color: #0d6efd;
+    color: #0d6efd;
 }
+
+/* Limpieza total de bordes y fondos */
+.react-calendar {
+    width: 100% !important;
+    border: none !important;
+    background: #ffffff !important;
+    padding: 10px;
+}
+
+/* Estilo de cada celda (Día) */
+.react-calendar__tile {
+    padding: 15px 5px !important; /* Espaciado fijo */
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 60px !important;
+}
+
+/* El número del día */
+.react-calendar__tile abbr {
+    position: relative;
+    z-index: 2;
+}
+
+/* MARCADOR: Círculo morado suave detrás del número */
+.dia-con-evento {
+    color: #6f42c1 !important; /* Texto morado */
+}
+
+.dia-con-evento::before {
+    content: "";
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background-color: #f1ecff; /* Morado muy clarito */
+    border-radius: 20%;
+    padding: 1.5rem;
+    z-index: 1;
+}
+
+
+/* Día actual */
+.react-calendar__tile--now {
+    background: none !important;
+}
+
+.react-calendar__tile--now abbr {
+    color: #ffc107; /* Color dorado/amarillo para hoy */
+    font-weight: bold;
+    border-bottom: 2px solid #ffc107;
+}
+
+/* Quitar el color azul feo al hacer click */
+.react-calendar__tile--active {
+    background: transparent !important; /* Quitamos el fondo rectangular */
+    color: white !important;
+}
+
+.react-calendar__tile--active::before {
+    content: "";
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background-color: #6f42c1 !important; /* El morado oscuro de tu diseño */
+    border-radius: 20%;
+    padding: 1.5rem;
+    z-index: 1;
+}
+
+/* Cabecera del calendario (Mes y flechas) */
+.react-calendar__navigation {
+    margin-bottom: 20px;
+}
+.react-calendar__navigation button {
+    font-weight: bold;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+    background-color: transparent !important;
+}
+
+/* Contenedor que abarca todo el tile del calendario */
+.hover-event-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10; /* Asegura que esté por encima para captar el ratón */
+    cursor: pointer;
+}
+
+/* Aseguramos que el tooltip no se quede cortado por la celda del calendario */
+.react-calendar__month-view__days__day {
+    overflow: visible !important;
+}
+
+/* --- ESTILOS DEL TOOLTIP PERSONALIZADO --- */
+
+/* La caja de texto flotante */
+.hover-event-container::after {
+    content: attr(data-evento); /* Lee el nombre del evento de React */
+    position: absolute;
+    bottom: 80%; /* Lo sitúa por encima del número */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #343a40; /* Gris oscuro elegante */
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap; /* Evita que el texto salte de línea */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease-in-out;
+    z-index: 100;
+    pointer-events: none; /* Para que el ratón no interactúe con el tooltip en sí */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* El pequeño triángulo que apunta hacia abajo */
+.hover-event-container::before {
+    content: "";
+    position: absolute;
+    bottom: calc(80% - 5px); /* Justo debajo de la caja principal */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px 5px 0;
+    border-style: solid;
+    border-color: #343a40 transparent transparent transparent;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease-in-out;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* Animación al hacer Hover */
+.hover-event-container:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -5px); /* Pequeño salto hacia arriba */
+}
+
+.hover-event-container:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
