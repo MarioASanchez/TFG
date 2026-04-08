@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Entrada;
 use App\Models\Etiqueta;
 use App\Models\Evento;
+use Carbon\Carbon;
 use Illuminate\Container\Attributes\Tag;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -108,7 +109,8 @@ class EntradaController
     }
 
     // Extraer el historial de compras de cada usuario (da igual la fecha)
-    public function obtenerPorLote(Request $request){
+    public function obtenerPorLote(Request $request)
+    {
         // Recibimos un array de IDs desde React
         $ids = $request->input('ids', []);
 
@@ -121,6 +123,5 @@ class EntradaController
 
         return response()->json($eventos);
     }
-    
-    // Extraer los eventos futuros que tiene cada usuario (fecha próxima)
+
 }

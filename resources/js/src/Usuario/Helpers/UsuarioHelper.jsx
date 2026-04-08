@@ -213,6 +213,8 @@ export const UsuarioHelperProvider = ({ children }) => {
     }
 };
 
+// Obtener las entradas futuras
+
 
     return (
         <UsuarioHelperContext.Provider

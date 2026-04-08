@@ -6,7 +6,7 @@ import Footer from "../shared/Footer";
 import Header from "../shared/Header";
 
 import { Link } from "react-router-dom";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 import { mostrarExito, mostrarError } from "../shared/Helpers/Notificaciones";
@@ -38,37 +38,79 @@ function Perfil() {
 
   }
 
-  // Agrupar las entradas que llegan en el JSON si son del mismo evento para que si hemos comprado varias entradas del mismo evento,
+  const cargarTodo = useCallback(async () => {
+    if (!usuarios?.id) return;
+
+    try {
+      // Solo mostramos el cargando la primera vez 
+      if (historial.length === 0) {
+        setCargando(true)
+      }
+      // 1. Cargamos etiquetas y preferencias en paralelo
+      const [tagsTotales, resPrefs] = await Promise.all([
+        obtenerEtiquetas(),
+        fetch(`${URL_SPRING}/preferencias/${usuarios.id}`)
+      ]);
+
+      setEtiquetas(tagsTotales);
+
+      let idsPrefs = [];
+      if (resPrefs.ok) {
+        const dataPrefs = await resPrefs.json();
+        idsPrefs = dataPrefs.idsEtiquetas || [];
+        setSeleccionadas(idsPrefs);
+      }
+
+      // 2. Cargamos Recomendaciones e Historial
+      const [dataRecom, dataHistorial] = await Promise.all([
+        obtenerRecomendados(idsPrefs),
+        obtenerHistorialCompleto(usuarios.id)
+      ]);
+
+      setRecomendados(dataRecom);
+      setHistorial(dataHistorial);
+
+      console.log("Datos actualizados automáticamente");
+
+    } catch (error) {
+      console.error("Error cargando perfil:", error);
+    } finally {
+      setCargando(false);
+    }
+  }, [usuarios?.id, obtenerEtiquetas, obtenerRecomendados, obtenerHistorialCompleto, URL_SPRING]);
+
   const historialAgrupado = useMemo(() => {
     if (!historial || historial.length === 0) return [];
 
     const agrupado = historial.reduce((acc, item) => {
       const id = item.idEvento;
+      const infoEvento = item.evento;
 
-      // 1. Extraemos los datos del evento (Laravel)
-      const nombreEvento = item.evento?.nombre;
-      const localizacion = item.evento?.localizacion;
-      const fechaEvento = item.evento?.fecha || item.fechaEvento;
-
-      const asientoActual = item.asientos || "N/A";
-      const listaAsientos = Array.isArray(asientoActual) ? asientoActual : [asientoActual];
+      // Limpiamos los asientos: de '["D1"]' a ['D1']
+      let asientosLimpios = [];
+      try {
+        asientosLimpios = typeof item.asientos === 'string'
+          ? JSON.parse(item.asientos)
+          : item.asientos;
+      } catch (e) {
+        asientosLimpios = [item.asientos];
+      }
 
       if (!acc[id]) {
         acc[id] = {
           ...item,
-          nombreEvento,
-          localizacion,
-          fechaEvento,
-          asientos: listaAsientos,
+          nombreEvento: infoEvento?.nombre || "Evento sin nombre",
+          localizacion: infoEvento?.localizacion || "N/A",
+          fechaEvento: infoEvento?.fechaInicio || item.fechaCompra,
+          fechaFin: infoEvento?.fechaFin ||item.fechaCompra,
+          asientos: Array.isArray(asientosLimpios) ? asientosLimpios : [asientosLimpios],
           precioTotal: parseFloat(item.precio || 0),
-          puntosTotal: parseInt(item.puntos || 0)
         };
       } else {
-        // Agrupar asientos evitando duplicados
-        acc[id].asientos = [...new Set([...acc[id].asientos, ...listaAsientos])];
-        // Sumar totales
+        // Evitar duplicados y combinar asientos
+        const nuevosAsientos = Array.isArray(asientosLimpios) ? asientosLimpios : [asientosLimpios];
+        acc[id].asientos = [...new Set([...acc[id].asientos, ...nuevosAsientos])];
         acc[id].precioTotal += parseFloat(item.precio || 0);
-        acc[id].puntosTotal += parseInt(item.puntos || 0);
       }
       return acc;
     }, {});
@@ -76,52 +118,39 @@ function Perfil() {
     return Object.values(agrupado);
   }, [historial]);
 
+  const eventosFuturos = useMemo(() => {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
-  // Cargamos toda la información aquí
+    return historialAgrupado.filter(item => {
+      if (!item.fechaEvento) return false;
+
+      const fechaEventoObj = new Date(item.fechaEvento);
+      return fechaEventoObj >= hoy;
+    });
+  }, [historialAgrupado]);
+
   useEffect(() => {
-    const cargarTodo = async () => {
-      if (!usuarios?.id) return;
+    // Carga inicial al montar el componente
+    cargarTodo();
 
-      try {
-        setCargando(true);
-
-        // 1. Cargamos etiquetas y preferencias en paralelo
-        const [tagsTotales, resPrefs] = await Promise.all([
-          obtenerEtiquetas(),
-          fetch(`${URL_SPRING}/preferencias/${usuarios.id}`)
-        ]);
-
-        setEtiquetas(tagsTotales);
-
-        let idsPrefs = [];
-        if (resPrefs.ok) {
-          const dataPrefs = await resPrefs.json();
-          idsPrefs = dataPrefs.idsEtiquetas || [];
-          setSeleccionadas(idsPrefs);
-        }
-
-        // 2. Cargamos Recomendaciones e Historial usando el Helper
-        const [dataRecom, dataHistorial] = await Promise.all([
-          obtenerRecomendados(idsPrefs),
-          obtenerHistorialCompleto(usuarios.id)
-        ]);
-
-        setRecomendados(dataRecom);
-        setHistorial(dataHistorial);
-
-        console.log(dataRecom)
-        console.log(dataHistorial)
-
-      } catch (error) {
-        console.error("Error cargando perfil:", error);
-      } finally {
-        setCargando(false);
-      }
+    // EFECTO TIEMPO REAL: 
+    // Cada vez que el usuario vuelve a esta pestaña (después de comprar, por ejemplo)
+    const refrescarAlVolver = () => {
+      console.log("Detectado foco en la ventana, actualizando historial...");
+      cargarTodo();
     };
 
-    cargarTodo();
-  }, [usuarios?.id]);
+    window.addEventListener('focus', refrescarAlVolver);
 
+    // Opcional: Polling cada 15 segundos si el usuario se queda quieto en la pantalla
+    const interval = setInterval(cargarTodo, 15000);
+
+    return () => {
+      window.removeEventListener('focus', refrescarAlVolver);
+      clearInterval(interval);
+    };
+  }, [cargarTodo]);
 
   // Función para añadir o quitar IDs del array
   const manejarCheck = (id) => {
@@ -181,7 +210,7 @@ function Perfil() {
                 style={{ color: "var(--primary-color)" }}
               ></i>
               <h3 className="mb-0" id="profileEventCount">
-                3
+                {eventosFuturos.length}
               </h3>
               <p className="text-muted mb-0">Eventos próximos</p>
             </div>
@@ -329,80 +358,51 @@ function Perfil() {
               </div>
               <div className="col-lg-6">
                 <h4 className="mb-4 text-dark">
-                  <i className="bi bi-ticket-perforated me-2"></i>Mis Entradas
+                  <i className="bi bi-ticket-perforated me-2"></i>Mis próximos eventos
                 </h4>
 
-                <div className="card-custom p-4 mb-3">
-                  <h6 className="fw-bold mb-2">Festival de Rock Murcia 2024</h6>
-                  <p className="small text-muted mb-2">
-                    <i className="bi bi-geo-alt me-1"></i>Auditorio El Batel
-                    <br />
-                    <i className="bi bi-calendar me-1"></i>15 Dic 2024, 21:00h
-                  </p>
-                  <span className="badge bg-primary">Asiento A5</span>
-                  <span className="badge bg-warning text-dark ms-2">VIP</span>
-                  <hr />
-                  <div className="row g-2">
-                    <div className="col-6">
-                      <button className="btn btn-sm btn-outline-primary w-100">
-                        <i className="bi bi-download me-1"></i>Descargar PDF
-                      </button>
-                    </div>
-                    <div className="col-6">
-                      <button className="btn btn-sm btn-outline-primary w-100">
-                        <i className="bi bi-share me-1"></i>Compartir
-                      </button>
-                    </div>
+                {cargando ? (
+                  /* Carga los datos de la BBDD */
+                  <div className="card-custom p-4 text-center">
+                    <div className="spinner-border text-primary mb-2" role="status"></div>
+                    <p className="text-muted mb-0">Buscando tus entradas...</p>
                   </div>
-                </div>
+                ) : eventosFuturos.length === 0 ? (
+                  /* Ha cargado pero no ha encontrado nada */
+                  <div className="card-custom p-4 text-center">
+                    <p className="text-muted mb-0">No tienes eventos próximos programados.</p>
+                  </div>
+                ) : (
+                  /* Los muestra */
+                  eventosFuturos.map((entrada) => (
+                    <div key={entrada.idEvento} className="card-custom p-4 mb-3 shadow-sm border-0">
+                      <h6 className="fw-bold mb-2">{entrada.nombreEvento}</h6>
+                      <p className="small text-muted mb-2">
+                        <i className="bi bi-geo-alt me-1"></i>{entrada.localizacion || "Localización por confirmar"}
+                        <br />
+                        <i className="bi bi-calendar me-1"> Fecha de inicio:</i>
+                        {new Date(entrada.fechaEvento).toLocaleDateString('es-ES', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                        <br />
+                        <i className="bi bi-calendar me-1"> Fecha de fin:</i>
+                        {new Date(entrada.fechaFin).toLocaleDateString('es-ES', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </p>
 
-                <div className="card-custom p-4 mb-3">
-                  <h6 className="fw-bold mb-2">Espectáculo de Flamenco</h6>
-                  <p className="small text-muted mb-2">
-                    <i className="bi bi-geo-alt me-1"></i>Teatro Romea
-                    <br />
-                    <i className="bi bi-calendar me-1"></i>20 Dic 2024, 20:00h
-                  </p>
-                  <span className="badge bg-primary">Asiento B12</span>
-                  <span className="badge bg-info text-dark ms-2">Preferente</span>
-                  <hr />
-                  <div className="row g-2">
-                    <div className="col-6">
-                      <button className="btn btn-sm btn-outline-primary w-100">
-                        <i className="bi bi-download me-1"></i>Descargar PDF
-                      </button>
+                      <div className="d-flex flex-wrap gap-2 mb-3">
+                        {entrada.asientos.map((asiento, index) => (
+                          <span key={index} className="badge bg-primary">Asiento {asiento}</span>
+                        ))}
+                      </div>
                     </div>
-                    <div className="col-6">
-                      <button className="btn btn-sm btn-outline-primary w-100">
-                        <i className="bi bi-share me-1"></i>Compartir
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="card-custom p-4 mb-3">
-                  <h6 className="fw-bold mb-2">Concierto de Año Nuevo</h6>
-                  <p className="small text-muted mb-2">
-                    <i className="bi bi-geo-alt me-1"></i>Teatro Circo
-                    <br />
-                    <i className="bi bi-calendar me-1"></i>31 Dic 2024, 23:00h
-                  </p>
-                  <span className="badge bg-primary">Asiento C8</span>
-                  <span className="badge bg-success text-dark ms-2">General</span>
-                  <hr />
-                  <div className="row g-2">
-                    <div className="col-6">
-                      <button className="btn btn-sm btn-outline-primary w-100">
-                        <i className="bi bi-download me-1"></i>Descargar PDF
-                      </button>
-                    </div>
-                    <div className="col-6">
-                      <button className="btn btn-sm btn-outline-primary w-100">
-                        <i className="bi bi-share me-1"></i>Compartir
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -445,7 +445,7 @@ function Perfil() {
                             </p>
                             <div className="d-flex justify-content-between align-items-center">
                               <span className="fw-bold text-purple" style={{ color: "var(--primary-color)" }}>
-                                {elemento.fecha_inicio || elemento.fecha || 'Próximamente'}
+                                {elemento.fechaInicio || 'Próximamente'}
                               </span>
                               <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1" style={{ fontSize: '0.7rem' }}>
                                 Disponible
