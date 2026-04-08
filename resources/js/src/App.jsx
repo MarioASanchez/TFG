@@ -14,6 +14,7 @@ import { CarritoProvider } from "./shared/Helpers/CarritoHelper";
 import AddEvento from "./Admin/AddEvento";
 import CambiarPermisos from "./Admin/CambiarPermisos";
 import { AdminHelperProvider } from "./Admin/Helpers/AdminHelper";
+import RutasProtegidas from "./Admin/RutasProtegidas";
 
 export default function App() {
     return (
@@ -23,14 +24,16 @@ export default function App() {
                     <AdminHelperProvider>
                         <CarritoProvider>
                             <Routes>
+                                {/* Rutas públicas */}
                                 <Route path="/" element={<Index />} />
-                                <Route path="/perfil/:id" element={<Perfil />} />
                                 <Route path="/registro" element={<Register />} />
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/eventos" element={<Eventos />} />
+                                {/* Rutas de usuario */}
+                                <Route path="/perfil/:id" element={<RutasProtegidas><Perfil /></RutasProtegidas> } />
                                 {/* Funciones de Admin */}
-                                <Route path="/addEvento" element={<AddEvento />} />
-                                <Route path="/permisos" element={<CambiarPermisos />}></Route>
+                                <Route path="/addEvento" element={<RutasProtegidas adminOnly={true}><AddEvento /></RutasProtegidas>} />
+                                <Route path="/permisos" element={<RutasProtegidas adminOnly={true}><CambiarPermisos /></RutasProtegidas>}></Route>
                             </Routes>
                         </CarritoProvider>
                     </AdminHelperProvider>
