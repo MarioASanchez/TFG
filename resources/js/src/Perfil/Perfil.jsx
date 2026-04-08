@@ -713,8 +713,6 @@ function Perfil() {
 
       {/* <!-- Footer --> */}
       <Footer />
-
-
     </>
   );
 }
