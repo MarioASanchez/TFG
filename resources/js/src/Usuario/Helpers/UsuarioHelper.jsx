@@ -98,7 +98,7 @@ export const UsuarioHelperProvider = ({ children }) => {
 
                 })
             });
-            
+
             mostrarExito("Datos cambiados con éxito")
 
         } catch (error) {
@@ -130,6 +130,7 @@ export const UsuarioHelperProvider = ({ children }) => {
         }
     }
 
+    // Guardar Preferencias en Spring
     const guardarPreferencias = async (idUsuario, idsEtiquetas) => {
         const payload = {
             idUsuario: idUsuario,
@@ -149,13 +150,73 @@ export const UsuarioHelperProvider = ({ children }) => {
             const errorMsg = await response.text();
             throw new Error(errorMsg || "Hubo un problema al guardar las etiquetas en el servidor");
         }
-   
+
         return await response.text();
     };
 
+    // Obtener las etiquetas desde Laravel
+    const obtenerEtiquetas = async () => {
+        try {
+            const response = await fetch(`${URL_LARAVEL}/etiquetas`);
+            return await response.json();
+        } catch (error) {
+            console.error("Error al obtener etiquetas:", error);
+            return [];
+        }
+    };
+
+    // Obtener las recomendaciones basadas en las etiquetas seleccionadas
+    const obtenerRecomendados = async (idsEtiquetas) => {
+        try {
+            const response = await fetch(`${URL_LARAVEL}/recomendados`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ etiquetas: idsEtiquetas })
+            });
+            return response.ok ? await response.json() : [];
+        } catch (error) {
+            console.error("Error al obtener recomendaciones:", error);
+            return [];
+        }
+    };
+
+    // Obtener el historial de compras del usuario (Spring y Laravel)
+    const obtenerHistorialCompleto = async (idUsuario) => {
+    try {
+        // Traer las compras realizadas de Spring
+        const resSpring = await fetch(`${URL_SPRING}/api/compras/usuario/${idUsuario}`);
+        if (!resSpring.ok) return [];
+        const compras = await resSpring.json();
+
+        if (compras.length === 0) return [];
+
+        // Extraer ID de los eventos
+        const idsEventos = [...new Set(compras.map(c => c.idEvento))];
+
+        //  Traer los eventos de Laravel 
+        const resLaravel = await fetch(`${URL_LARAVEL}/eventos/lote`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: idsEventos })
+        });
+        const eventos = await resLaravel.json();
+
+        //  Combinar datos
+        return compras.map(compra => ({
+            ...compra,
+            evento: eventos.find(e => e.id === compra.idEvento) || null
+        }));
+
+    } catch (error) {
+        console.error("Error en el historial:", error);
+        return [];
+    }
+};
+
+
     return (
         <UsuarioHelperContext.Provider
-            value={{ usuarios, setUsuarios, token, login, logout, register, cambiarDatos, eliminarCuenta, guardarPreferencias }}
+            value={{ usuarios, setUsuarios, token, login, logout, register, cambiarDatos, eliminarCuenta, guardarPreferencias, obtenerEtiquetas, obtenerHistorialCompleto, obtenerRecomendados }}
         >
             {children}
         </UsuarioHelperContext.Provider>

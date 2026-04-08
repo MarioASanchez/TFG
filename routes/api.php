@@ -12,3 +12,5 @@ Route::post('/addEvento', [EntradaController::class, 'addEvento']);
 Route::get('/etiquetas', [EntradaController::class, 'getEtiquetas']);
 // Gestión de recomendados
 Route::post('/recomendados', [EntradaController::class, 'recomendadosPersonalizados']);
+// Obtener los eventos comprados por cada usuario
+Route::post('/eventos/lote', [EntradaController::class, 'obtenerPorLote']);

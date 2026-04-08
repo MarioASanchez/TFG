@@ -6,16 +6,22 @@ import Footer from "../shared/Footer";
 import Header from "../shared/Header";
 
 import { Link } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 import { mostrarExito, mostrarError } from "../shared/Helpers/Notificaciones";
+import { IndexHelperContext } from "../Index/helpers/IndexHelper";
 
 function Perfil() {
-  let { usuarios, eliminarCuenta, cambiarDatos, guardarPreferencias } = useContext(UsuarioHelperContext)
+  const { usuarios, eliminarCuenta, cambiarDatos, guardarPreferencias, obtenerEtiquetas, obtenerRecomendados, obtenerHistorialCompleto } = useContext(UsuarioHelperContext)
+  const { eventos } = useContext(IndexHelperContext);
   const [etiquetas, setEtiquetas] = useState([]);
   const [seleccionadas, setSeleccionadas] = useState([]);
   const [recomendados, setRecomendados] = useState([]);
+  const [historial, setHistorial] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+
   const URL_LARAVEL = import.meta.env.VITE_API_EVENTS_URL;
   const URL_SPRING = import.meta.env.VITE_API_USERS_URL;
 
@@ -32,74 +38,108 @@ function Perfil() {
 
   }
 
-  // MANEJO DE LAS ETIQUETAS
+  // Agrupar las entradas que llegan en el JSON si son del mismo evento para que si hemos comprado varias entradas del mismo evento,
+  const historialAgrupado = useMemo(() => {
+    if (!historial || historial.length === 0) return [];
+
+    const agrupado = historial.reduce((acc, item) => {
+      const id = item.idEvento;
+
+      // 1. Extraemos los datos del evento (Laravel)
+      const nombreEvento = item.evento?.nombre;
+      const localizacion = item.evento?.localizacion;
+      const fechaEvento = item.evento?.fecha || item.fechaEvento;
+
+      const asientoActual = item.asientos || "N/A";
+      const listaAsientos = Array.isArray(asientoActual) ? asientoActual : [asientoActual];
+
+      if (!acc[id]) {
+        acc[id] = {
+          ...item,
+          nombreEvento,
+          localizacion,
+          fechaEvento,
+          asientos: listaAsientos,
+          precioTotal: parseFloat(item.precio || 0),
+          puntosTotal: parseInt(item.puntos || 0)
+        };
+      } else {
+        // Agrupar asientos evitando duplicados
+        acc[id].asientos = [...new Set([...acc[id].asientos, ...listaAsientos])];
+        // Sumar totales
+        acc[id].precioTotal += parseFloat(item.precio || 0);
+        acc[id].puntosTotal += parseInt(item.puntos || 0);
+      }
+      return acc;
+    }, {});
+
+    return Object.values(agrupado);
+  }, [historial]);
+
+
+  // Cargamos toda la información aquí
   useEffect(() => {
-    const cargarDatosIniciales = async () => {
+    const cargarTodo = async () => {
       if (!usuarios?.id) return;
 
       try {
-        // 1. Cargamos etiquetas globales (Laravel)
-        const resLaravel = await fetch(`${URL_LARAVEL}/etiquetas`);
-        const tagsTotales = await resLaravel.json();
+        setCargando(true);
+
+        // 1. Cargamos etiquetas y preferencias en paralelo
+        const [tagsTotales, resPrefs] = await Promise.all([
+          obtenerEtiquetas(),
+          fetch(`${URL_SPRING}/preferencias/${usuarios.id}`)
+        ]);
+
         setEtiquetas(tagsTotales);
 
-        // 2. Cargamos preferencias (Spring Boot)
-        const resSpring = await fetch(`${URL_SPRING}/preferencias/${usuarios.id}`);
-
-        // CREAMOS UNA VARIABLE LOCAL para guardar los IDs y poder usarlos ahora mismo
-        let idsParaRecomendaciones = [];
-
-        if (resSpring.ok) {
-          const dataUsuario = await resSpring.json();
-          // Extraemos los IDs de la respuesta de Spring
-          idsParaRecomendaciones = dataUsuario.idsEtiquetas || [];
-          // Actualizamos el estado para los checkboxes
-          setSeleccionadas(idsParaRecomendaciones);
+        let idsPrefs = [];
+        if (resPrefs.ok) {
+          const dataPrefs = await resPrefs.json();
+          idsPrefs = dataPrefs.idsEtiquetas || [];
+          setSeleccionadas(idsPrefs);
         }
 
-        console.log("Enviando estas etiquetas a Laravel:", idsParaRecomendaciones);
-        // 3. Recomendaciones (Laravel)
-        const resEventos = await fetch(`${URL_LARAVEL}/recomendados`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          // Enviamos la variable que acabamos de definir arriba
-          body: JSON.stringify({ etiquetas: idsParaRecomendaciones })
-        });
+        // 2. Cargamos Recomendaciones e Historial usando el Helper
+        const [dataRecom, dataHistorial] = await Promise.all([
+          obtenerRecomendados(idsPrefs),
+          obtenerHistorialCompleto(usuarios.id)
+        ]);
 
-        if (resEventos.ok) {
-          const eventosData = await resEventos.json();
-          setRecomendados(eventosData);
-        }
+        setRecomendados(dataRecom);
+        setHistorial(dataHistorial);
+
+        console.log(dataRecom)
+        console.log(dataHistorial)
 
       } catch (error) {
-        console.error("Error al cargar la configuración del perfil:", error);
+        console.error("Error cargando perfil:", error);
+      } finally {
+        setCargando(false);
       }
     };
 
-    cargarDatosIniciales();
+    cargarTodo();
   }, [usuarios?.id]);
 
 
-  // 1. Función para añadir o quitar IDs del array
+  // Función para añadir o quitar IDs del array
   const manejarCheck = (id) => {
-    setSeleccionadas((prev) =>
-      prev.includes(id)
-        ? prev.filter(item => item !== id) // Si ya está, lo quita
-        : [...prev, id]                   // Si no está, lo añade
+    setSeleccionadas(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
     );
   };
 
   // 2. Función para el guardado de las etiquetas
   const enviarPreferencias = async () => {
     try {
-      // Llamamos a la función del Helper 
       await guardarPreferencias(usuarios.id, seleccionadas);
-      mostrarExito("Preferencias guardadas con éxito")
+      // Recargar recomendados tras guardar nuevas etiquetas
+      const nuevosRecom = await obtenerRecomendados(seleccionadas);
+      setRecomendados(nuevosRecom);
+      mostrarExito("Preferencias guardadas");
     } catch (error) {
-      mostrarError("Woopsie")
+      mostrarError("Error al guardar");
     }
   };
 
@@ -178,16 +218,7 @@ function Perfil() {
               <i className="bi bi-graph-up-arrow me-2 "></i>Recomendados
             </button>
           </li>
-          <li className="nav-item " role="presentation">
-            <button
-              className="nav-link bg-success"
-              data-bs-toggle="pill"
-              data-bs-target="#tabFavorites"
-              type="button"
-            >
-              <i className="bi bi-heart-fill me-2"></i>Favoritos
-            </button>
-          </li>
+
           <li className="nav-item" role="presentation">
             <button
               className="nav-link bg-success"
@@ -381,7 +412,7 @@ function Perfil() {
             <section className="py-4">
               <div className="container p-0">
                 <h2 className="display-6 fw-bold mb-4">
-                 Recomendados para ti
+                  Recomendados para ti
                 </h2>
                 <p className="text-muted mb-4">Planes personalizados según tus intereses.</p>
 
@@ -566,63 +597,30 @@ function Perfil() {
             </div>
 
             <div className="card-custom p-4">
-              <h4 className="mb-4">
+              <h4 className="mb-4 text-dark">
                 <i className="bi bi-clock-history me-2"></i>Historial de Compras
               </h4>
 
-              <div className="border rounded p-3 mb-3">
-                <div className="d-flex justify-content-between align-items-start">
+              {historialAgrupado.map((compra) => (
+                <div key={compra.idEvento} className="border rounded p-3 mb-3 d-flex justify-content-between align-items-center">
                   <div>
-                    <h6 className="mb-1">Festival de Rock Murcia 2024</h6>
-                    <p className="small text-muted mb-2">
-                      <i className="bi bi-calendar me-1"></i>1 de noviembre de 2024
-                      <br />
-                      <i className="bi bi-credit-card me-1"></i>Visa **** 1234
+                    <h6 className="fw-bold mb-1">{compra.nombreEvento}</h6>
+                    <p className="small text-muted mb-1">
+                      <i className="bi bi-calendar3 me-2"></i>{compra.fechaCompra || '2026-04-07'}
                     </p>
-                    <span className="badge bg-success">Completada</span>
+                    <span className="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style={{ fontSize: '0.75rem' }}>
+                      Completada
+                    </span>
                   </div>
                   <div className="text-end">
-                    <p className="mb-0 fw-bold fs-5">45€</p>
-                    <p className="small text-success mb-0">+45 puntos</p>
+                    <p className="mb-0 fw-bold fs-5">{compra.precioTotal.toFixed(2)}€</p>
+                    <p className="text-muted mb-0" style={{ fontSize: '0.7rem' }}>
+                      Asientos comprados: {compra.asientos.join(', ')}
+                    </p>
                   </div>
                 </div>
-              </div>
+              ))}
 
-              <div className="border rounded p-3 mb-3">
-                <div className="d-flex justify-content-between align-items-start">
-                  <div>
-                    <h6 className="mb-1">Espectáculo de Flamenco</h6>
-                    <p className="small text-muted mb-2">
-                      <i className="bi bi-calendar me-1"></i>15 de noviembre de 2024
-                      <br />
-                      <i className="bi bi-credit-card me-1"></i>Mastercard **** 5678
-                    </p>
-                    <span className="badge bg-success">Completada</span>
-                  </div>
-                  <div className="text-end">
-                    <p className="mb-0 fw-bold fs-5">35€</p>
-                    <p className="small text-success mb-0">+35 puntos</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border rounded p-3 mb-3">
-                <div className="d-flex justify-content-between align-items-start">
-                  <div>
-                    <h6 className="mb-1">Concierto de Año Nuevo</h6>
-                    <p className="small text-muted mb-2">
-                      <i className="bi bi-calendar me-1"></i>22 de noviembre de 2024
-                      <br />
-                      <i className="bi bi-credit-card me-1"></i>Visa **** 1234
-                    </p>
-                    <span className="badge bg-success">Completada</span>
-                  </div>
-                  <div className="text-end">
-                    <p className="mb-0 fw-bold fs-5">45€</p>
-                    <p className="small text-success mb-0">+45 puntos</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 

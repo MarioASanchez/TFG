@@ -33,7 +33,7 @@ class EntradaController
             'etiquetas.*' => 'string'
         ]);
 
-        // Transacción para evitar eventos sin entradas
+        // Transacción para evitar crear eventos sin entradas
         return DB::transaction(function () use ($request) {
             // Guardar la imagen
             $path = $request->file('imagen')->store('eventos', 'public');
@@ -77,24 +77,24 @@ class EntradaController
         });
     }
 
-
+    // Obtener todas las etiquetas de la BBDD de eventos
     public function getEtiquetas()
     {
         return response()->json(Etiqueta::all(), 200);
     }
 
-    // Recomendaciones
+    // Traer cuatro eventos aleatorios (con los ID recibidos) en función de los ID que hayamos obtenido del usuario
     public function recomendadosPersonalizados(Request $request)
     {
         // Buscamos 'etiquetas', que es lo que envías desde React
         $idsEtiquetas = $request->input('etiquetas', []);
 
-        // 2. Si no hay preferencias, fallback aleatorio
+        // 2. Si no hay preferencias, devuelve cuatro eventos aleatorios
         if (empty($idsEtiquetas)) {
             return response()->json(Evento::with('tags')->inRandomOrder()->limit(4)->get());
         }
 
-        // 3. Filtrado real
+        // 3. Filtrado 
         $eventos = Evento::with('tags')
             ->whereHas('tags', function ($query) use ($idsEtiquetas) {
                 // Importante: Asegúrate que 'etiquetas.id' es el nombre real de tu tabla/columna
@@ -106,4 +106,21 @@ class EntradaController
 
         return response()->json($eventos);
     }
+
+    // Extraer el historial de compras de cada usuario (da igual la fecha)
+    public function obtenerPorLote(Request $request){
+        // Recibimos un array de IDs desde React
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return response()->json([]);
+        }
+
+        // Buscamos todos los eventos que coincidan con esos IDs
+        $eventos = Evento::whereIn('id', $ids)->get();
+
+        return response()->json($eventos);
+    }
+    
+    // Extraer los eventos futuros que tiene cada usuario (fecha próxima)
 }
