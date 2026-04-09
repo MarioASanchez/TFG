@@ -1,6 +1,9 @@
 import React from "react";
 import SelectioAsiento from "./SelectioAsiento";
 import { obtenerUrlImagen } from "./Helpers/ImagenHelper";
+import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
+import { AdminHelperContext } from "../Admin/Helpers/AdminHelper";
+import { mostrarError, mostrarExito } from "./Helpers/Notificaciones";
 
 function formatearFecha(fecha) {
   if (!fecha) {
@@ -16,8 +19,11 @@ function formatearFecha(fecha) {
   });
 }
 
-function DetalleEventoModal({ mostrar, cerrarModal, evento }) {
+function DetalleEventoModal({ mostrar, cerrarModal, evento, alEliminarEvento }) {
+  const { usuarios } = React.useContext(UsuarioHelperContext);
+  const { eliminarEvento } = React.useContext(AdminHelperContext);
   const [mostrarSelectorAsiento, setMostrarSelectorAsiento] = React.useState(false);
+  const [eliminandoEvento, setEliminandoEvento] = React.useState(false);
 
   React.useEffect(() => {
     if (!mostrar) {
@@ -48,6 +54,31 @@ function DetalleEventoModal({ mostrar, cerrarModal, evento }) {
   const cerrarFlujoCompra = () => {
     setMostrarSelectorAsiento(false);
     cerrarModal();
+  };
+
+  const borrarEvento = async () => {
+    const confirmacion = window.confirm(`¿Seguro que quieres eliminar el evento "${evento.nombre}"?`);
+
+    if (!confirmacion) {
+      return;
+    }
+
+    try {
+      setEliminandoEvento(true);
+      await eliminarEvento(evento.id);
+
+      if (alEliminarEvento) {
+        alEliminarEvento(evento.id);
+      }
+
+      mostrarExito("Evento eliminado con exito");
+      cerrarModal();
+    } catch (error) {
+      console.error(error);
+      mostrarError("No se ha podido eliminar el evento");
+    } finally {
+      setEliminandoEvento(false);
+    }
   };
 
   return (
@@ -133,6 +164,15 @@ function DetalleEventoModal({ mostrar, cerrarModal, evento }) {
                   >
                     Cerrar
                   </button>
+                  {usuarios?.admin && (
+                    <button
+                      className="btn btn-danger rounded-pill px-4 py-3 fw-semibold"
+                      onClick={borrarEvento}
+                      disabled={eliminandoEvento}
+                    >
+                      {eliminandoEvento ? "Eliminando..." : "Eliminar evento"}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

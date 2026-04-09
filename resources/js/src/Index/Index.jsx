@@ -11,8 +11,10 @@ import { obtenerUrlImagen } from "../shared/Helpers/ImagenHelper";
 
 function Index() {
     const navigate = useNavigate();
-    const { eventos } = useContext(IndexHelperContext);
+    const { eventos, eventosDestacados, etiquetas, eliminarEventoDelIndex } = useContext(IndexHelperContext);
     const [eventoActivo, setEventoActivo] = useState(null);
+    const [textoBusqueda, setTextoBusqueda] = useState("");
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
 
     function verDetallesEvento(evento) {
         setEventoActivo(evento);
@@ -23,11 +25,20 @@ function Index() {
     }
 
     function verEventos() {
-        navigate("/eventos");
+        navigate("/eventos", {
+            state: {
+                textoBusqueda: textoBusqueda.trim(),
+                categoriaSeleccionada
+            }
+        });
     }
 
-    function obtenerEventoDestacado(indice, eventoPorDefecto) {
-        return eventos[indice] || eventoPorDefecto;
+    function formatearFecha(fecha) {
+        if (!fecha) {
+            return "Fecha pendiente";
+        }
+
+        return new Date(fecha).toLocaleDateString("es-ES");
     }
 
     return (
@@ -51,15 +62,22 @@ function Index() {
                                             type="text"
                                             className="form-control form-control-dark"
                                             placeholder="Que evento buscas?"
+                                            value={textoBusqueda}
+                                            onChange={(ev) => setTextoBusqueda(ev.target.value)}
                                         />
                                     </div>
                                     <div className="col-md-4">
-                                        <select className="form-select">
-                                            <option>Todas las categorias</option>
-                                            <option>Teatro</option>
-                                            <option>Musica</option>
-                                            <option>Danza</option>
-                                            <option>Comedia</option>
+                                        <select
+                                            className="form-select"
+                                            value={categoriaSeleccionada}
+                                            onChange={(ev) => setCategoriaSeleccionada(ev.target.value)}
+                                        >
+                                            <option value="">Todas las categorias</option>
+                                            {etiquetas.map((etiqueta) => (
+                                                <option key={etiqueta.id} value={etiqueta.nombreEtiqueta}>
+                                                    {etiqueta.nombreEtiqueta.charAt(0).toUpperCase() + etiqueta.nombreEtiqueta.slice(1)}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
                                     <div className="col-md-3">
@@ -81,131 +99,45 @@ function Index() {
                     </h2>
 
                     <div className="row g-4">
-                        <div className="col-lg-4 col-md-6">
-                            <div className="card-custom">
-                                <div className="position-relative">
-                                    <img
-                                        src="https://images.unsplash.com/photo-1503095396549-807759245b35?w=500"
-                                        className="w-100 card-img-custom"
-                                        alt="El Lago de los Cisnes"
-                                    />
-                                    <span className="badge badge-purple position-absolute top-0 end-0 m-3 text-white">
-                                        Destacado
-                                    </span>
-                                </div>
-                                <div className="p-4">
-                                    <h3 className="h5 fw-bold mb-2">El Lago de los Cisnes</h3>
-                                    <p className="text-gray-custom mb-3">Teatro Romea - 15 Dic 2024</p>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span className="fs-4 fw-bold text-purple">Desde 25 EUR</span>
-                                        <button
-                                            className="btn btn-primary-custom btn-sm"
-                                            onClick={() =>
-                                                verDetallesEvento(
-                                                    obtenerEventoDestacado(0, {
-                                                        id: "destacado-1",
-                                                        nombre: "El Lago de los Cisnes",
-                                                        imagen: "https://images.unsplash.com/photo-1503095396549-807759245b35?w=500",
-                                                        fechaInicio: "2024-12-15T21:00:00",
-                                                        fechaFin: "2024-12-15T23:00:00",
-                                                        localizacion: "Teatro Romea",
-                                                        descripcion: "Una velada clasica con una de las obras mas reconocidas del ballet.",
-                                                        precio: 25,
-                                                        stock: 50
-                                                    })
-                                                )
-                                            }
-                                        >
-                                            Ver mas
-                                        </button>
+                        {eventosDestacados.length === 0 ? (
+                            <div className="col-12 text-center text-light">
+                                No hay eventos destacados disponibles todavia.
+                            </div>
+                        ) : (
+                            eventosDestacados.map((eventoDestacado) => (
+                                <div className="col-lg-4 col-md-6" key={eventoDestacado.id}>
+                                    <div className="card-custom">
+                                        <div className="position-relative">
+                                            <img
+                                                src={obtenerUrlImagen(eventoDestacado.imagen)}
+                                                className="w-100 card-img-custom"
+                                                alt={eventoDestacado.nombre}
+                                            />
+                                            <span className="badge badge-purple position-absolute top-0 end-0 m-3 text-white">
+                                                Destacado
+                                            </span>
+                                        </div>
+                                        <div className="p-4">
+                                            <h3 className="h5 fw-bold mb-2">{eventoDestacado.nombre}</h3>
+                                            <p className="text-gray-custom mb-3">
+                                                {eventoDestacado.localizacion || "Murcia"} - {formatearFecha(eventoDestacado.fechaInicio)}
+                                            </p>
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <span className="fs-4 fw-bold text-purple">
+                                                    Desde {Number(eventoDestacado.precio || 0).toFixed(2)} EUR
+                                                </span>
+                                                <button
+                                                    className="btn btn-primary-custom btn-sm"
+                                                    onClick={() => verDetallesEvento(eventoDestacado)}
+                                                >
+                                                    Ver mas
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className="col-lg-4 col-md-6">
-                            <div className="card-custom">
-                                <div className="position-relative">
-                                    <img
-                                        src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=500"
-                                        className="w-100 card-img-custom"
-                                        alt="Concierto Sinfonico"
-                                    />
-                                    <span className="badge badge-purple position-absolute top-0 end-0 m-3 text-white">
-                                        Destacado
-                                    </span>
-                                </div>
-                                <div className="p-4">
-                                    <h3 className="h5 fw-bold mb-2">Concierto Sinfonico de Ano Nuevo</h3>
-                                    <p className="text-gray-custom mb-3">Auditorio - 31 Dic 2024</p>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span className="fs-4 fw-bold text-purple">Desde 30 EUR</span>
-                                        <button
-                                            className="btn btn-primary-custom btn-sm"
-                                            onClick={() =>
-                                                verDetallesEvento(
-                                                    obtenerEventoDestacado(1, {
-                                                        id: "destacado-2",
-                                                        nombre: "Concierto Sinfonico de Ano Nuevo",
-                                                        imagen: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=500",
-                                                        fechaInicio: "2024-12-31T20:00:00",
-                                                        fechaFin: "2024-12-31T22:00:00",
-                                                        localizacion: "Auditorio",
-                                                        descripcion: "Un concierto especial para cerrar el ano con musica en directo.",
-                                                        precio: 30,
-                                                        stock: 40
-                                                    })
-                                                )
-                                            }
-                                        >
-                                            Ver mas
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-lg-4 col-md-6">
-                            <div className="card-custom">
-                                <div className="position-relative">
-                                    <img
-                                        src="https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=500"
-                                        className="w-100 card-img-custom"
-                                        alt="Don Quijote"
-                                    />
-                                    <span className="badge badge-purple position-absolute top-0 end-0 m-3 text-white">
-                                        Destacado
-                                    </span>
-                                </div>
-                                <div className="p-4">
-                                    <h3 className="h5 fw-bold mb-2">Don Quijote - Ballet Nacional</h3>
-                                    <p className="text-gray-custom mb-3">Teatro Circo - 20 Dic 2024</p>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span className="fs-4 fw-bold text-purple">Desde 35 EUR</span>
-                                        <button
-                                            className="btn btn-primary-custom btn-sm"
-                                            onClick={() =>
-                                                verDetallesEvento(
-                                                    obtenerEventoDestacado(2, {
-                                                        id: "destacado-3",
-                                                        nombre: "Don Quijote - Ballet Nacional",
-                                                        imagen: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=500",
-                                                        fechaInicio: "2024-12-20T20:30:00",
-                                                        fechaFin: "2024-12-20T22:30:00",
-                                                        localizacion: "Teatro Circo",
-                                                        descripcion: "Una representacion del clasico llevada a escena por el Ballet Nacional.",
-                                                        precio: 35,
-                                                        stock: 35
-                                                    })
-                                                )
-                                            }
-                                        >
-                                            Ver mas
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </section>
@@ -303,6 +235,7 @@ function Index() {
                 mostrar={Boolean(eventoActivo)}
                 cerrarModal={cerrarDetallesEvento}
                 evento={eventoActivo}
+                alEliminarEvento={eliminarEventoDelIndex}
             />
         </>
     );
