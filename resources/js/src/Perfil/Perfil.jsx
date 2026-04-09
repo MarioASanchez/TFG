@@ -11,6 +11,8 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 import { mostrarExito, mostrarError } from "../shared/Helpers/Notificaciones";
 import { IndexHelperContext } from "../Index/helpers/IndexHelper";
+import DetalleEventoModal from "../shared/DetalleEventoModal";
+import { obtenerUrlImagen } from "../shared/Helpers/ImagenHelper";
 
 function Perfil() {
   const { usuarios, eliminarCuenta, cambiarDatos, guardarPreferencias, obtenerEtiquetas, obtenerRecomendados, obtenerHistorialCompleto } = useContext(UsuarioHelperContext)
@@ -20,6 +22,7 @@ function Perfil() {
   const [recomendados, setRecomendados] = useState([]);
   const [historial, setHistorial] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [eventoActivo, setEventoActivo] = useState(null);
 
 
   const URL_LARAVEL = import.meta.env.VITE_API_EVENTS_URL;
@@ -171,6 +174,20 @@ function Perfil() {
   if (!usuarios) {
     return <p>Cargando datos del perfil...</p>;
   }
+
+  const abrirModalEvento = (evento) => {
+    setEventoActivo(evento);
+  };
+
+  const cerrarModalEvento = () => {
+    setEventoActivo(null);
+  };
+
+  const eliminarEventoDeRecomendados = (idEvento) => {
+    setRecomendados((eventosPrevios) =>
+      eventosPrevios.filter((evento) => evento.id !== idEvento)
+    );
+  };
 
   return (
     <>
@@ -398,12 +415,12 @@ function Perfil() {
                         <div
                           className="card-custom h-100 d-flex flex-column p-0 overflow-hidden shadow-sm"
                           style={{ cursor: "pointer" }}
-                          onClick={() => window.location.href = `/evento/${elemento.id}`}
+                          onClick={() => abrirModalEvento(elemento)}
                         >
                           <img
-                            src={elemento.imagen?.startsWith('http') ? elemento.imagen : `${URL_LARAVEL}/../storage/${elemento.imagen}`}
+                            src={obtenerUrlImagen(elemento.imagen)}
                             className="w-100 card-img-small"
-                            alt={elemento.titulo}
+                            alt={elemento.nombre}
                             style={{ height: '160px', objectFit: 'cover' }}
                           />
                           <div className="p-3 flex-grow-1 d-flex flex-column">
@@ -713,6 +730,13 @@ function Perfil() {
 
       {/* <!-- Footer --> */}
       <Footer />
+
+      <DetalleEventoModal
+        mostrar={Boolean(eventoActivo)}
+        cerrarModal={cerrarModalEvento}
+        evento={eventoActivo}
+        alEliminarEvento={eliminarEventoDeRecomendados}
+      />
     </>
   );
 }
