@@ -1,62 +1,64 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.min.js";
-import { Link } from 'react-router-dom'
-import React from "react";
+import { useContext } from "react";
+// Asegúrate de importar los iconos en tu index.js: import "bootstrap-icons/font/bootstrap-icons.css";
+import { Link } from 'react-router-dom';
+import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 
 
 function Footer() {
+      const { usuarios } = useContext(UsuarioHelperContext);
     return (
-        <footer className="gradient-purple py-5">
+        <footer className="gradient-purple py-5 mt-5 text-white">
             <div className="container">
-                <div className="row g-3">
-                    <div className="col-lg-3 col-md-6">
-                        <Link to="/" className="navbar-brand d-flex align-items-center">
-                             <img className="logo_encabezado" src="logo_sin_fondo.png" alt="Logo Eventium" />
+                <div className="row g-4 justify-content-between">
+                    
+                    {/* COLUMNA 1: LOGO Y TEXTO */}
+                    <div className="col-lg-4">
+                        <Link to="/" className="d-inline-block mb-3">
+                            <img 
+                                src="/logo_sin_fondo.png" 
+                                alt="Logo Eventium" 
+                                style={{ height: '75px', width: 'auto' }} // Controlamos el tamaño aquí
+                                className="img-fluid"
+                            />
                         </Link>
+                        <p className="text-white-50 pe-lg-5">
+                            Descubre los mejores eventos culturales y consigue tus entradas con descuentos exclusivos
+                        </p>
+
                     </div>
 
-                    <div className="col-lg-3 col-md-6">
-                        <h4 className="h6 fw-bold mb-3">Enlaces</h4>
+                    {/* COLUMNA 2: ENLACES RÁPIDOS */}
+                    <div className="col-6 col-md-4 col-lg-2">
+                        <h6 className="fw-bold text-uppercase mb-4 text-white">Explora</h6>
                         <ul className="list-unstyled">
-                            <li className="mb-2">
-                                <Link to={"/eventos"} className="text-light text-decoration-none"> Eventos</Link>
-                                
-                            </li>
-                            <li className="mb-2">
-                                <Link to="#" className="text-light text-decoration-none">Mis Entradas</Link>
-                            </li>
-                            <li className="mb-2">
-                                <Link to="#" className="text-light text-decoration-none">Sistema de Puntos</Link>
-                            </li>
+                            <li className="mb-2"><Link to="/eventos" className="text-white-50 text-decoration-none link-light">Eventos</Link></li>
+                            <li className="mb-2"><Link to={`/perfil/${usuarios.id}`} className="text-white-50 text-decoration-none link-light">Mi Perfil</Link></li>
                         </ul>
                     </div>
 
-                    <div className="col-lg-3 col-md-6">
-                        <h4 className="h6 fw-bold mb-3">Ayuda</h4>
+                    {/* COLUMNA 3: SOPORTE */}
+                    <div className="col-6 col-md-4 col-lg-2">
+                        <h6 className="fw-bold text-uppercase mb-4 text-white">Ayuda</h6>
                         <ul className="list-unstyled">
-                            <li className="mb-2">
-                                <Link to="#" className="text-light text-decoration-none">Preguntas Frecuentes</Link>
-                            </li>
-                            <li className="mb-2">
-                                <Link to="#" className="text-light text-decoration-none">Contacto</Link>
-                            </li>
-                            <li className="mb-2">
-                                <Link to="#" className="text-light text-decoration-none">Política de Privacidad</Link>
-                            </li>
+                            <li className="mb-2"><Link to="#" className="text-white-50 text-decoration-none link-light">FAQ</Link></li>
+                            <li className="mb-2"><Link to="#" className="text-white-50 text-decoration-none link-light">Contacto</Link></li>
+                            <li className="mb-2"><Link to="#" className="text-white-50 text-decoration-none link-light">Legal</Link></li>
                         </ul>
                     </div>
+
                 </div>
 
-                <hr className="my-4 border-light opacity-25" />
-                <div className="text-center text-light">
-                    <p className="mb-0">
-                        &copy; 2026 Eventos Murcia. Todos los derechos reservados.
+                <hr className="my-5 border-secondary" />
+
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <p className="small text-white-50 mb-0">
+                        &copy; 2026 Eventium. Todos los derechos reservados.
                     </p>
                 </div>
             </div>
         </footer>
-
-    )
+    );
 }
 
-export default Footer
+export default Footer;

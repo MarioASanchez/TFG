@@ -34,7 +34,7 @@ function Header() {
         <div className="container">
           <Link to="/" className="navbar-brand d-flex align-items-center">
             <span className="fs-4 fw-bold">
-              <img className="logo_encabezado" src="logo_sin_fondo.png" alt="Logo Eventium" />
+              <img className="logo_encabezado" src="/logo_sin_fondo.png" alt="Logo Eventium" />
             </span>
           </Link>
 
