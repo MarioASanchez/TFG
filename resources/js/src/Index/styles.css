@@ -169,6 +169,56 @@
             width: 100%;
         }
 
+        .evento-boton-detalle {
+            color: inherit;
+        }
+
+        .evento-boton-detalle:hover {
+            color: inherit;
+        }
+
+        .evento-resumen-descripcion {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 3.75rem;
+        }
+
+        .detalle-evento-imagen {
+            height: 320px;
+            object-fit: cover;
+        }
+
+        .detalle-evento-cerrar {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: rgba(15, 15, 26, 0.55);
+            border-radius: 999px;
+            padding: 0.85rem;
+        }
+
+        .detalle-evento-descripcion {
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .detalle-evento-dato {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(236, 72, 153, 0.08) 100%);
+            border: 1px solid rgba(124, 58, 237, 0.12);
+            border-radius: 16px;
+            padding: 1rem;
+        }
+
+        .detalle-evento-etiqueta {
+            color: var(--primary-dark);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
         /* Button Styles */
         .btn-primary-custom {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
@@ -443,6 +493,10 @@
                 font-size: 2rem;
             }
 
+            .detalle-evento-imagen {
+                height: 240px;
+            }
+
             .seat {
                 width: 28px;
                 height: 28px;
@@ -501,4 +555,4 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             border: none;
             color: white !important;
-        }
+        }

@@ -15,6 +15,7 @@ import AddEvento from "./Admin/AddEvento";
 import CambiarPermisos from "./Admin/CambiarPermisos";
 import { AdminHelperProvider } from "./Admin/Helpers/AdminHelper";
 import RutasProtegidas from "./Admin/RutasProtegidas";
+import NotFound from "./shared/NotFound";
 
 export default function App() {
     return (
@@ -34,6 +35,7 @@ export default function App() {
                                 {/* Funciones de Admin */}
                                 <Route path="/addEvento" element={<RutasProtegidas adminOnly={true}><AddEvento /></RutasProtegidas>} />
                                 <Route path="/permisos" element={<RutasProtegidas adminOnly={true}><CambiarPermisos /></RutasProtegidas>}></Route>
+                                <Route path="*" element={<NotFound />} />
                             </Routes>
                         </CarritoProvider>
                     </AdminHelperProvider>

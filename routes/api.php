@@ -4,13 +4,10 @@ use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\FileUploadController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/eventos' , [EntradaController::class , 'verProductos']);
+Route::get('/eventos', [EntradaController::class, 'verProductos']);
 Route::post('/upload', [FileUploadController::class, 'store']);
-// Añadir los eventos
 Route::post('/addEvento', [EntradaController::class, 'addEvento']);
-// Recuperar las etiquetas
+Route::delete('/evento/{id}', [EntradaController::class, 'eliminarEvento']);
 Route::get('/etiquetas', [EntradaController::class, 'getEtiquetas']);
-// Gestión de recomendados
 Route::post('/recomendados', [EntradaController::class, 'recomendadosPersonalizados']);
-// Obtener los eventos comprados por cada usuario
 Route::post('/eventos/lote', [EntradaController::class, 'obtenerPorLote']);
