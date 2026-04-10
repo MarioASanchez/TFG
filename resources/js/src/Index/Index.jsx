@@ -43,8 +43,9 @@ function Index() {
 
     return (
         <>
+            {/* header */}
             <Header />
-
+            {/* Hero section */}
             <section className="hero-section d-flex align-items-center">
                 <div className="gradient-overlay position-absolute w-100 h-100"></div>
                 <div className="container position-relative">
@@ -142,12 +143,14 @@ function Index() {
                 </div>
             </section>
 
+            {/* Todos los eventos */}
             <section className="py-5">
                 <div className="container">
                     <h2 className="display-5 fw-bold mb-5" id="todos_eventos">
                         Todos los Eventos
                     </h2>
                     <div className="row g-4">
+                        {/* Eventos */}
                         {eventos.map((elemento, indice) => {
                             return (
                                 <div className="col-lg-3 col-md-4 col-sm-6" key={indice}>
@@ -228,6 +231,7 @@ function Index() {
                     </div>
                 </div>
             </section>
+
 
             <Footer />
 

@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 
 import React, { useContext } from 'react';
+import React, { useContext } from 'react';
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
@@ -12,6 +13,7 @@ function AddEvento() {
     const { usuarios } = useContext(UsuarioHelperContext)
     const { addEvento } = useContext(AdminHelperContext)
 
+    async function procesa(ev) {
     async function procesa(ev) {
         ev.preventDefault();
 
@@ -35,11 +37,14 @@ function AddEvento() {
         });
 
         try {
+        try {
             await addEvento(formData);
             mostrarExito("Evento añadido con éxito")
             ev.target.reset();
         } catch (error) {
+        } catch (error) {
             console.error(error.message)
+            mostrarError("No se ha podido guardar el evento")
             mostrarError("No se ha podido guardar el evento")
         }
     }
@@ -48,14 +53,16 @@ function AddEvento() {
         <>
             <Header />
             <div className="container mb-5">
-                <h2 className="mt-4">Hola {usuarios.nombre}, añade un nuevo evento</h2>
+                <h2 className="mt-4">Hola {usuarios.nombre}, anade un nuevo evento</h2>
                 <form onSubmit={procesa}>
                     <div className="form-group">
                         <label>Nombre del evento</label><br />
                         <input type="text" name="nombre" className="form-control" required /><br />
+                        <input type="text" name="nombre" className="form-control" required /><br />
                     </div>
                     <div className="form-group">
                         <label>Fecha de inicio del evento</label><br />
+                        <input type="date" name="fechaInicio" className="form-control" required /><br />
                         <input type="date" name="fechaInicio" className="form-control" required /><br />
                     </div>
                     <div className="form-group">
@@ -65,9 +72,11 @@ function AddEvento() {
                     <div className="form-group">
                         <label>Aforo aproximado</label><br />
                         <input type="number" name="aforo" className="form-control" required /><br />
+                        <input type="number" name="aforo" className="form-control" required /><br />
                     </div>
                     <div className="form-group">
                         <label>Precio</label>
+                        <input type="number" name="precio" className="form-control" required /><br />
                         <input type="number" name="precio" className="form-control" required /><br />
                     </div>
                     <div className="form-group">
@@ -87,7 +96,7 @@ function AddEvento() {
                         <input type="file" name="imagen" accept="image/*" className="form-control" required /> <br />
                     </div>
 
-                    <input type="submit" value="Añadir evento" className="btn btn-primary" />
+                    <input type="submit" value="Anadir evento" className="btn btn-primary" />
                 </form>
             </div>
 

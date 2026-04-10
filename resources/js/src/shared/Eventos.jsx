@@ -119,50 +119,25 @@ function Eventos() {
             {loading ? (
               <div className="text-center">Cargando eventos...</div>
             ) : eventosFiltrados.length === 0 ? (
-              <div className="text-center">No hay eventos que coincidan con la busqueda.</div>
+              <div className="text-center">No hay eventos que coincidan con la búsqueda.</div>
             ) : (
               eventosFiltrados.map((evento) => (
                 <div key={evento.id} className="col-lg-3 col-md-4 col-sm-6">
                   <div className="card-custom h-100 d-flex flex-column p-0 overflow-hidden shadow-sm">
-                    <button
-                      type="button"
-                      className="evento-boton-detalle p-0 border-0 bg-transparent text-start"
-                      onClick={() => abrirModalEvento(evento)}
-                    >
-                      <img
-                        src={obtenerUrlImagen(evento.imagen)}
-                        className="w-100 card-img-small"
-                        alt={evento.nombre}
-                      />
-                    </button>
-
+                    <img
+                      src={evento.imagen.startsWith('http') ? evento.imagen : `/storage/${evento.imagen}`}
+                      className="w-100 card-img-small"
+                      alt={evento.nombre}
+                    />
                     <div className="p-3 grow d-flex flex-column">
-                      <button
-                        type="button"
-                        className="evento-boton-detalle border-0 bg-transparent text-start p-0"
-                        onClick={() => abrirModalEvento(evento)}
-                      >
-                        <h3 className="h6 fw-bold mb-2">{evento.nombre}</h3>
-                      </button>
-
-                      <p className="small text-muted mb-2">
-                        {evento.localizacion || "Ubicacion por confirmar"} - {formatearFecha(evento.fechaInicio)}
+                      <h3 className="h6 fw-bold mb-2">{evento.nombre}</h3>
+                      <p className="small text-muted mb-3">
+                        {evento.localizacion} • {new Date(evento.fechaInicio).toLocaleDateString()}
                       </p>
-
-                      {Array.isArray(evento.etiquetas) && evento.etiquetas.length > 0 && (
-                        <p className="small text-purple mb-2">
-                          {evento.etiquetas.join(" - ")}
-                        </p>
-                      )}
-
-                      <p className="small text-secondary mb-3 evento-resumen-descripcion">
-                        {evento.descripcion || "Pulsa en ver detalles para consultar la informacion completa del evento."}
-                      </p>
-
                       <div className="mt-auto">
                         <div className="d-flex justify-content-between align-items-center mb-3">
                           <span className="fw-bold text-purple">
-                            {Number(evento.precio || 0).toFixed(2)} EUR
+                            {Number(evento.precio || 0).toFixed(2)} €
                           </span>
                           <span
                             className={`badge px-2 py-1 ${
@@ -175,13 +150,11 @@ function Eventos() {
                             {Number(evento.stock) > 0 ? "Disponible" : "Agotado"}
                           </span>
                         </div>
-
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary btn-sm w-100 rounded-pill"
-                          onClick={() => abrirModalEvento(evento)}
+                        <button 
+                          className="btn btn-primary-custom btn-sm w-100 rounded-pill"
+                          onClick={() => addToCart(evento)}
                         >
-                          Ver detalles
+                          Añadir al Carrito
                         </button>
                       </div>
                     </div>

@@ -170,7 +170,7 @@ function DetalleEventoModal({ mostrar, cerrarModal, evento, alEliminarEvento }) 
                       onClick={borrarEvento}
                       disabled={eliminandoEvento}
                     >
-                      {eliminandoEvento ? "Eliminando..." : "Eliminar evento"}
+                      {eliminandoEvento ? "Eliminando..." : "Eliminar el evento"}
                     </button>
                   )}
                 </div>
