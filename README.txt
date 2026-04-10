@@ -66,6 +66,9 @@ php artisan key:generate
 Ejecutar migraciones si corresponde:
 php artisan migrate
 
+Crear carpeta de enlace para visualizar las imágenes:
+php artisan storage:link
+
 Levantar Laravel:
 php artisan serve
 

@@ -81,6 +81,11 @@ Ejecutar migraciones si corresponde:
 php artisan migrate
 ```
 
+Crear carpeta de enlace para visualizar las imágenes:
+```bash
+php artisan storage:link
+```
+
 Levantar Laravel:
 
 ```bash
