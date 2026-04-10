@@ -326,65 +326,7 @@ body.dark-mode .points-card {
     border-left: 4px solid var(--info-color);
 }
 
-/* Dark Mode Adjustments */
-body.dark-mode .form-control,
-body.dark-mode .form-select {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    border-color: var(--border-color);
-}
 
-body.dark-mode .form-control:focus,
-body.dark-mode .form-select:focus {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    border-color: var(--primary-color);
-}
-
-body.dark-mode .form-check-input {
-    background-color: var(--bg-secondary);
-    border-color: var(--border-color);
-}
-
-body.dark-mode .form-check-input:checked {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-body.dark-mode .text-muted {
-    color: var(--text-muted) !important;
-}
-
-body.dark-mode hr {
-    border-color: var(--border-color);
-    opacity: 0.3;
-}
-
-body.dark-mode .border {
-    border-color: var(--border-color) !important;
-}
-
-body.dark-mode .progress {
-    background: var(--bg-secondary);
-}
-
-body.dark-mode .badge-secondary {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-}
-
-body.dark-mode .dropdown-menu {
-    background: var(--card-bg);
-    border-color: var(--border-color);
-}
-
-body.dark-mode .dropdown-item {
-    color: var(--text-primary);
-}
-
-body.dark-mode .dropdown-item:hover {
-    background: var(--bg-secondary);
-}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -537,10 +479,10 @@ input:checked + label {
 .hover-event-container::after {
     content: attr(data-evento); /* Lee el nombre del evento de React */
     position: absolute;
-    bottom: 80%; /* Lo sitúa por encima del número */
+    bottom: 80%; 
     left: 50%;
     transform: translateX(-50%);
-    background-color: #343a40; /* Gris oscuro elegante */
+    background-color: #343a40; 
     color: #ffffff;
     padding: 6px 12px;
     border-radius: 6px;
@@ -559,7 +501,7 @@ input:checked + label {
 .hover-event-container::before {
     content: "";
     position: absolute;
-    bottom: calc(80% - 5px); /* Justo debajo de la caja principal */
+    bottom: calc(80% - 5px); 
     left: 50%;
     transform: translateX(-50%);
     border-width: 5px 5px 0;
@@ -572,11 +514,11 @@ input:checked + label {
     pointer-events: none;
 }
 
-/* Animación al hacer Hover */
+
 .hover-event-container:hover::after {
     opacity: 1;
     visibility: visible;
-    transform: translate(-50%, -5px); /* Pequeño salto hacia arriba */
+    transform: translate(-50%, -5px); 
 }
 
 .hover-event-container:hover::before {

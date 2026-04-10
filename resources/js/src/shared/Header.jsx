@@ -46,7 +46,6 @@ function Header() {
             <ul className="navbar-nav ms-auto align-items-center">
 
               {/* 1. CARRITO: Solo si el usuario NO es admin (opcional, tú decides) */}
-              {(!usuarios || !usuarios.admin) && <CartButton />}
 
               {/* 2. USUARIO NO LOGUEADO */}
               {!usuarios && (
@@ -66,7 +65,7 @@ function Header() {
               {/* 3. USUARIO LOGUEADO (Cualquier rol) */}
               {usuarios && (
                 <>
-                <CartButton />
+                  <CartButton />
                   <li className="nav-item">
                     <Link to="/" className="nav-link fw-bold">Inicio</Link>
                   </li>
@@ -74,18 +73,6 @@ function Header() {
                     <Link to="/eventos" className="nav-link fw-bold">Eventos</Link>
                   </li>
                   
-
-                  {/* --- SOLO USUARIOS NORMALES (NO ADMIN) --- */}
-                  {!usuarios.admin && (
-                    <>
-                      <li className="nav-item">
-                        <Link to="#" className="nav-link fw-bold">Mis Entradas</Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link to="#" className="nav-link fw-bold">Puntos</Link>
-                      </li>
-                    </>
-                  )}
 
                   {/* --- SOLO ADMINISTRADORES --- */}
                   {usuarios.admin && (

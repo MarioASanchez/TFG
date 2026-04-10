@@ -169,6 +169,56 @@
             width: 100%;
         }
 
+        .evento-boton-detalle {
+            color: inherit;
+        }
+
+        .evento-boton-detalle:hover {
+            color: inherit;
+        }
+
+        .evento-resumen-descripcion {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 3.75rem;
+        }
+
+        .detalle-evento-imagen {
+            height: 320px;
+            object-fit: cover;
+        }
+
+        .detalle-evento-cerrar {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: rgba(15, 15, 26, 0.55);
+            border-radius: 999px;
+            padding: 0.85rem;
+        }
+
+        .detalle-evento-descripcion {
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .detalle-evento-dato {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(236, 72, 153, 0.08) 100%);
+            border: 1px solid rgba(124, 58, 237, 0.12);
+            border-radius: 16px;
+            padding: 1rem;
+        }
+
+        .detalle-evento-etiqueta {
+            color: var(--primary-dark);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
         /* Button Styles */
         .btn-primary-custom {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
@@ -252,7 +302,7 @@
             font-size: 1.2rem;
         }
 
-        /* Points Section */
+        /* Sección de puntos */
         .points-card {
             background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%);
             border: 2px solid rgba(124, 58, 237, 0.2);
@@ -261,7 +311,7 @@
             text-align: center;
         }
 
-        /* Profile Styles */
+        /* Estilos del perfil */
         .profile-header {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             padding: 2rem;
@@ -292,57 +342,6 @@
             color: white;
         }
 
-        /* Calendar Styles */
-        .calendar {
-            background: white;
-            padding: 1rem;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0.5rem;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .calendar-day:hover {
-            background: #f3f4f6;
-        }
-
-        .calendar-day.has-event {
-            background: var(--primary-color);
-            color: white;
-            font-weight: bold;
-        }
-
-        .calendar-day.selected {
-            border: 2px solid var(--primary-color);
-        }
-
-        .calendar-day.other-month {
-            color: #9ca3af;
-        }
 
         /* Achievement Card */
         .achievement-card {
@@ -397,16 +396,6 @@
             animation: slideIn 0.3s ease;
         }
 
-        /* @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        } */
 
         .toast-success { border-left: 4px solid var(--success-color); }
         .toast-error { border-left: 4px solid var(--danger-color); }
@@ -443,6 +432,10 @@
                 font-size: 2rem;
             }
 
+            .detalle-evento-imagen {
+                height: 240px;
+            }
+
             .seat {
                 width: 28px;
                 height: 28px;
@@ -461,7 +454,7 @@
             position: relative;
         }
 
-        /* Agregamos un ligero sutil resplandor púrpura en el fondo */
+        /* Agregamos un ligero resplandor púrpura en el fondo */
         .bg-dark-custom::before {
             content: '';
             position: absolute;
@@ -501,4 +494,4 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             border: none;
             color: white !important;
-        }
+        }

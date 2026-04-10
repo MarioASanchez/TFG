@@ -75,7 +75,7 @@ function Register() {
               />
             </div>
              <div className="mb-3">
-              <label className="form-label">Direccion</label>
+              <label className="form-label">Dirección</label>
               <input
                 type="text"
                 name="direccion"

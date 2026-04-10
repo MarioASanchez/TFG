@@ -1,12 +1,11 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useContext } from "react";
-// Asegúrate de importar los iconos en tu index.js: import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link } from 'react-router-dom';
 import { UsuarioHelperContext } from "../Usuario/Helpers/UsuarioHelper";
 
-
 function Footer() {
-      const { usuarios } = useContext(UsuarioHelperContext);
+    const { usuarios } = useContext(UsuarioHelperContext);
+
     return (
         <footer className="gradient-purple py-5 mt-5 text-white">
             <div className="container">
@@ -18,22 +17,56 @@ function Footer() {
                             <img 
                                 src="/logo_sin_fondo.png" 
                                 alt="Logo Eventium" 
-                                style={{ height: '75px', width: 'auto' }} // Controlamos el tamaño aquí
+                                style={{ height: '75px', width: 'auto' }} 
                                 className="img-fluid"
                             />
                         </Link>
                         <p className="text-white-50 pe-lg-5">
                             Descubre los mejores eventos culturales y consigue tus entradas con descuentos exclusivos
                         </p>
-
                     </div>
 
-                    {/* COLUMNA 2: ENLACES RÁPIDOS */}
+                    {/* COLUMNA 2: ENLACES RÁPIDOS CONDICIONALES */}
                     <div className="col-6 col-md-4 col-lg-2">
                         <h6 className="fw-bold text-uppercase mb-4 text-white">Explora</h6>
                         <ul className="list-unstyled">
-                            <li className="mb-2"><Link to="/eventos" className="text-white-50 text-decoration-none link-light">Eventos</Link></li>
-                            <li className="mb-2"><Link to={`/perfil/${usuarios.id}`} className="text-white-50 text-decoration-none link-light">Mi Perfil</Link></li>
+                            
+                            {/* Siempre visible para todos */}
+                            <li className="mb-2">
+                                <Link to="/eventos" className="text-white-50 text-decoration-none link-light">Eventos</Link>
+                            </li>
+
+                            {/* 1. USUARIO NO LOGUEADO */}
+                            {!usuarios && (
+                                <>
+                                    <li className="mb-2">
+                                        <Link to="/login" className="text-white-50 text-decoration-none link-light">Iniciar Sesión</Link>
+                                    </li>
+                                    <li className="mb-2">
+                                        <Link to="/registro" className="text-white-50 text-decoration-none link-light">Crear cuenta</Link>
+                                    </li>
+                                </>
+                            )}
+
+                            {/* 2. USUARIO LOGUEADO (Cualquier rol) */}
+                            {usuarios && (
+                                <li className="mb-2">
+                                    <Link to={`/perfil/${usuarios.id}`} className="text-white-50 text-decoration-none link-light">Mi Perfil</Link>
+                                </li>
+                            )}
+
+
+                            {/* 4. SOLO ADMINISTRADORES */}
+                            {usuarios && usuarios.admin && (
+                                <>
+                                    <li className="mb-2">
+                                        <Link to="/addEvento" className="text-white-50 text-decoration-none link-light">Añadir evento</Link>
+                                    </li>
+                                    <li className="mb-2">
+                                        <Link to="/permisos" className="text-white-50 text-decoration-none link-light">Modificar permisos</Link>
+                                    </li>
+                                </>
+                            )}
                         </ul>
                     </div>
 
@@ -41,7 +74,7 @@ function Footer() {
                     <div className="col-6 col-md-4 col-lg-2">
                         <h6 className="fw-bold text-uppercase mb-4 text-white">Ayuda</h6>
                         <ul className="list-unstyled">
-                            <li className="mb-2"><Link to="#" className="text-white-50 text-decoration-none link-light">FAQ</Link></li>
+                            <li className="mb-2"><Link to="#" className="text-white-50 text-decoration-none link-light">Preguntas frecuentes</Link></li>
                             <li className="mb-2"><Link to="#" className="text-white-50 text-decoration-none link-light">Contacto</Link></li>
                             <li className="mb-2"><Link to="#" className="text-white-50 text-decoration-none link-light">Legal</Link></li>
                         </ul>

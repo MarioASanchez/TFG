@@ -7,10 +7,10 @@ export const CarritoContext = createContext();
 export const CarritoProvider = ({ children }) => {
     const [cart, setCart] = useState(() => {
         try {
-            const savedCart = localStorage.getItem("carrito");
-            return savedCart ? JSON.parse(savedCart) : [];
-        } catch (e) {
-            console.error("Error al cargar el carrito:", e);
+            const carritoGuardado = localStorage.getItem("carrito");
+            return carritoGuardado ? JSON.parse(carritoGuardado) : [];
+        } catch (error) {
+            console.error("Error al cargar el carrito:", error);
             return [];
         }
     });
@@ -22,29 +22,65 @@ export const CarritoProvider = ({ children }) => {
         localStorage.setItem("carrito", JSON.stringify(cart));
     }, [cart]);
 
-    const addToCart = (event) => {
-        setCart((prevCart) => {
-            const existingItem = prevCart.find((item) => item.id === event.id);
-            if (existingItem) {
-                return prevCart.map((item) =>
-                    item.id === event.id ? { ...item, cantidad: item.cantidad + 1 } : item
-                );
+    const addToCart = (evento) => {
+        setCart((carritoAnterior) => {
+            // Esta clave separa variantes del mismo evento, por ejemplo "general" y "vip".
+            const claveCarrito = evento.claveCarrito ?? evento.id;
+            const entradaExistente = carritoAnterior.find(
+                (item) => (item.claveCarrito ?? item.id) === claveCarrito
+            );
+
+            if (entradaExistente) {
+                return carritoAnterior.map((item) => {
+                    const claveActual = item.claveCarrito ?? item.id;
+                    if (claveActual !== claveCarrito) {
+                        return item;
+                    }
+
+                    const asientosActuales = item.asientos ?? [];
+                    const asientosNuevos = evento.asientos ?? [];
+
+                    return {
+                        ...item,
+                        ...evento,
+                        // Si ya existe la misma linea, acumulamos cantidad y fusionamos asientos.
+                        cantidad: (item.cantidad ?? 0) + (evento.cantidad ?? 1),
+                        asientos: Array.from(new Set([...asientosActuales, ...asientosNuevos]))
+                    };
+                });
             }
-            return [...prevCart, { ...event, cantidad: 1 }];
+
+            return [
+                ...carritoAnterior,
+                {
+                    ...evento,
+                    claveCarrito,
+                    cantidad: evento.cantidad ?? 1
+                }
+            ];
         });
     };
 
     const removeFromCart = (id) => {
-        setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+        setCart((carritoAnterior) =>
+            carritoAnterior.filter((item) => (item.claveCarrito ?? item.id) !== id)
+        );
     };
 
     const updateQuantity = (id, newQuantity) => {
         if (newQuantity < 1) return;
-        setCart((prevCart) =>
-            prevCart.map((item) =>
-                item.id === id ? { ...item, cantidad: newQuantity } : item
-            )
-        );
+        setCart((carritoAnterior) => {
+            const entrada = carritoAnterior.find((item) => (item.claveCarrito ?? item.id) === id);
+
+            // Las entradas con asiento no deben modificar cantidad con +/- porque perderian coherencia.
+            if (entrada?.asientos?.length > 0) {
+                return carritoAnterior;
+            }
+
+            return carritoAnterior.map((item) =>
+                (item.claveCarrito ?? item.id) === id ? { ...item, cantidad: newQuantity } : item
+            );
+        });
     };
 
     const clearCart = () => {
@@ -62,9 +98,9 @@ export const CarritoProvider = ({ children }) => {
 
         const payload = {
             idUsuario: usuarios.id,
-            // Mapeamos los items del carrito al formato que espera el servidor Java
+            // Enviamos el id real del evento aunque en el carrito usemos una clave compuesta.
             items: cart.map(item => ({
-                idEvento: item.id,
+                idEvento: item.idEvento ?? item.id,
                 precio: item.precio,
                 cantidad: item.cantidad,
                 // Si el item tiene asientos (vienen del modal), los enviamos como texto JSON
