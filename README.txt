@@ -1,14 +1,14 @@
-# Proyecto Eventium
+PROYECTO EVENTIUM
 
 Aplicación web compuesta por:
 
-- Un backend principal en **Laravel** que también integra el frontend en **React** mediante **Vite**
-- Un backend independiente en **Spring Boot** para la gestión de usuarios
-- Una base de datos **MySQL** para eventos y otra base de datos **MySQL** para usuarios
+- Un backend principal en Laravel que también integra el frontend en React mediante Vite
+- Un backend independiente en Spring Boot para la gestión de usuarios
+- Una base de datos MySQL para eventos y otra base de datos MySQL para usuarios
 
-La aplicación permite gestionar eventos, registro e inicio de sesión de usuarios, preferencias personalizadas, compras de entradas e historial de compras.
+La aplicación permite gestionar eventos, registro e inicio de sesión de usuarios, preferencias personalizadas, compras de entradas y consultar historial de compras.
 
-## Tecnologías
+TECNOLOGÍAS
 
 - Laravel 12
 - React 19
@@ -18,12 +18,12 @@ La aplicación permite gestionar eventos, registro e inicio de sesión de usuari
 - MySQL
 - Bootstrap
 
-## Estructura del proyecto
+ESTRUCTURA DEL PROYECTO
 
-- `/TFG-main` -> Proyecto principal Laravel + React + API de eventos
-- `/backend_usuarios` -> API Spring Boot para usuarios, autenticación, preferencias y compras
+- /TFG-main -> Proyecto principal Laravel + React + API de eventos
+- /backend_usuarios -> API Spring Boot para usuarios, autenticación, preferencias y compras
 
-## Funcionalidades principales
+FUNCIONALIDADES PRINCIPALES
 
 - Listado de eventos
 - Alta y eliminación de eventos
@@ -36,7 +36,7 @@ La aplicación permite gestionar eventos, registro e inicio de sesión de usuari
 - Historial de compras
 - Consulta de asientos ocupados por evento
 
-## Requisitos
+REQUISITOS
 
 - Node.js y npm
 - PHP 8.2 o superior
@@ -45,81 +45,50 @@ La aplicación permite gestionar eventos, registro e inicio de sesión de usuari
 - Maven
 - MySQL
 
-## Ejecución sin Docker
+EJECUCIÓN SIN DOCKER
 
-### 1. Backend Laravel + React
+1. Backend Laravel + React
 
 Entrar en la carpeta:
-
-```bash
-cd TFG-main
-```
+TFG-main
 
 Instalar dependencias de PHP:
-
-```bash
 composer install
-```
 
 Instalar dependencias de Node.js:
-
-```bash
 npm install
-```
 
-Configurar el archivo `.env` de Laravel con la base de datos de eventos.
+Configurar el archivo .env de Laravel con la base de datos de eventos.
 
 Generar clave de aplicación si fuese necesario:
-
-```bash
 php artisan key:generate
-```
 
 Ejecutar migraciones si corresponde:
-
-```bash
 php artisan migrate
-```
 
 Levantar Laravel:
-
-```bash
 php artisan serve
-```
 
 En otra terminal, arrancar Vite:
-
-```bash
 npm run dev
-```
 
-### 2. Backend Spring Boot
+2. Backend Spring Boot
 
 Entrar en la carpeta:
+backend_usuarios
 
-```bash
-cd backend_usuarios
-```
-
-Configurar el archivo `application.properties` con la base de datos de usuarios.
+Configurar el archivo application.properties con la base de datos de usuarios.
 
 Levantar el backend:
-
-```bash
 mvn spring-boot:run
-```
 
 Si Maven no está instalado globalmente, usar el wrapper incluido:
-
-```bash
 mvnw.cmd spring-boot:run
-```
 
-## Configuración de entorno
+CONFIGURACIÓN DE ENTORNO
 
-### Archivo `.env` de Laravel
+Archivo .env de Laravel:
 
-```env
 APP_URL=http://127.0.0.1:8000
 
 DB_CONNECTION=mysql
@@ -131,11 +100,9 @@ DB_PASSWORD=
 
 VITE_API_EVENTS_URL=http://localhost:8000/api
 VITE_API_USERS_URL=http://localhost:8080
-```
 
-### Archivo `application.properties` de Spring Boot
+Archivo application.properties de Spring Boot:
 
-```properties
 spring.application.name=backend_usuarios
 spring.datasource.url=jdbc:mysql://localhost:3306/usuarios_eventium
 spring.datasource.username=root
@@ -143,23 +110,22 @@ spring.datasource.password=
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-```
 
-## Bases de datos
+BASES DE DATOS
 
 El proyecto utiliza dos bases de datos MySQL:
 
-- `eventos` -> usada por Laravel para la gestión de eventos
-- `usuarios_eventium` -> usada por Spring Boot para usuarios, preferencias y compras
+- eventos -> usada por Laravel para la gestión de eventos
+- usuarios_eventium -> usada por Spring Boot para usuarios, preferencias y compras
 
-## Puertos
+PUERTOS
 
-- Laravel: `http://127.0.0.1:8000`
-- Vite (desarrollo frontend): `http://localhost:5173`
-- Spring Boot: `http://localhost:8080`
-- MySQL: `3306`
+- Laravel: http://127.0.0.1:8000
+- Vite (desarrollo frontend): http://localhost:5173
+- Spring Boot: http://localhost:8080
+- MySQL: 3306
 
-## Notas
+NOTAS
 
 - El frontend React está integrado dentro del proyecto Laravel, no está separado en una carpeta independiente.
 - Para desarrollo local, Laravel y Vite deben ejecutarse al mismo tiempo.
