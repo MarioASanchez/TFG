@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { CarritoContext } from "./Helpers/CarritoHelper";
 import { obtenerUrlImagen } from "./Helpers/ImagenHelper";
 
@@ -7,7 +7,7 @@ function SelectioAsiento({ show, handleClose, evento, alConfirmarCompra }) {
   const [asientosSeleccionados, setAsientosSeleccionados] = React.useState([]);
   const [asientosOcupados, setAsientosOcupados] = React.useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (show && evento) {
       setAsientosSeleccionados([]);
       fetch(`${import.meta.env.VITE_API_USERS_URL}/api/compras/evento/${evento.id}`)

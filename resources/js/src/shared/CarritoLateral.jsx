@@ -31,7 +31,7 @@ const CarritoLateral = () => {
                                         className="rounded shadow-sm me-3"
                                         style={{ width: "50px", height: "50px", objectFit: "cover" }}
                                     />
-                                    <div className="flex-grow-1 min-width-0">
+                                    <div className="grow min-width-0">
                                         <h6 className="mb-0 text-white text-truncate small fw-bold">{item.nombre}</h6>
                                         {item.tipoEntrada && (
                                             <div className="small text-info fw-semibold">{item.tipoEntrada}</div>

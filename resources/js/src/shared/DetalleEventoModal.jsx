@@ -71,7 +71,7 @@ function DetalleEventoModal({ mostrar, cerrarModal, evento, alEliminarEvento }) 
         alEliminarEvento(evento.id);
       }
 
-      mostrarExito("Evento eliminado con exito");
+      mostrarExito("Evento eliminado con éxito");
       cerrarModal();
     } catch (error) {
       console.error(error);

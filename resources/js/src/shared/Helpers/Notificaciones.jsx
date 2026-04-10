@@ -10,7 +10,7 @@ export const mostrarExito = (mensaje) => {
     html: <i>{mensaje}</i>,
     icon: 'success',
     confirmButtonColor: '#3085d6',
-    timer: 3000, // Se cierra solo en 3 segundos
+    timer: 3000, // Se cierra sólo en 3 segundos
     timerProgressBar: true,
   });
 };

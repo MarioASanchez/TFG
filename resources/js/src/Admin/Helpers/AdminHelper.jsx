@@ -1,6 +1,5 @@
 import { createContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { mostrarExito, mostrarError } from "../../shared/Helpers/Notificaciones";
 export const AdminHelperContext = createContext();
 
 export const AdminHelperProvider = ({ children }) => {
@@ -8,7 +7,6 @@ export const AdminHelperProvider = ({ children }) => {
     const [eventosAdmin, setEventosAdmin] = useState([]);
     const [token, setToken] = useState(localStorage.getItem("token"));
 
-    const navigate = useNavigate();
     const URL_SPRING = import.meta.env.VITE_API_USERS_URL;
     const URL_LARAVEL = import.meta.env.VITE_API_EVENTS_URL;
 
@@ -76,7 +74,7 @@ export const AdminHelperProvider = ({ children }) => {
             setEventosAdmin((eventosPrevios) =>
                 eventosPrevios.filter((evento) => evento.id !== idEvento)
             );
-
+            mostrarExito("Evento eliminado correctamente")
             return data;
         } catch (error) {
             console.error("Error al eliminar evento:", error);
@@ -99,7 +97,6 @@ export const AdminHelperProvider = ({ children }) => {
 
             const data = await response.json();
             setDatosUsuarios(data);
-            console.log(data)
 
         } catch (error) {
             console.error("Error en la peticion:", error);
@@ -125,9 +122,10 @@ export const AdminHelperProvider = ({ children }) => {
                 prevUsuarios.map((u) => (u.id === id ? usuarioActualizado : u))
             );
 
-            console.log("Usuario actualizado con exito:", usuarioActualizado);
+            mostrarExito("Permisos cambiados con éxito")
 
         } catch (error) {
+            mostrarError("No se han podido cambiar los permisos")
             console.error("Error al cambiar permisos:", error);
         }
     };

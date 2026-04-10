@@ -31,12 +31,12 @@ function Footer() {
                         <h6 className="fw-bold text-uppercase mb-4 text-white">Explora</h6>
                         <ul className="list-unstyled">
                             
-                            {/* Siempre visible para todos */}
+                            {/* DA IGUAL EL ROL */}
                             <li className="mb-2">
                                 <Link to="/eventos" className="text-white-50 text-decoration-none link-light">Eventos</Link>
                             </li>
 
-                            {/* 1. USUARIO NO LOGUEADO */}
+                            {/* USUARIO NO LOGUEADO */}
                             {!usuarios && (
                                 <>
                                     <li className="mb-2">
@@ -48,7 +48,7 @@ function Footer() {
                                 </>
                             )}
 
-                            {/* 2. USUARIO LOGUEADO (Cualquier rol) */}
+                            {/* USUARIO LOGUEADO (Cualquier rol) */}
                             {usuarios && (
                                 <li className="mb-2">
                                     <Link to={`/perfil/${usuarios.id}`} className="text-white-50 text-decoration-none link-light">Mi Perfil</Link>
@@ -56,7 +56,7 @@ function Footer() {
                             )}
 
 
-                            {/* 4. SOLO ADMINISTRADORES */}
+                            {/* ADMINISTRADORES */}
                             {usuarios && usuarios.admin && (
                                 <>
                                     <li className="mb-2">
